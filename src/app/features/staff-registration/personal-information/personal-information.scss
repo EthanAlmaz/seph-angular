@@ -356,11 +356,11 @@
 
 @media (max-width: 520px) {
   .inline-field {
-    align-items: stretch;
-    flex-direction: column;
-  }
+  align-items: stretch;
+  flex-direction: column;
+}
 
-  .btn-agregar {
-    width: 100%;
-  }
+.btn-agregar {
+  width: 100%;
+}
 }
