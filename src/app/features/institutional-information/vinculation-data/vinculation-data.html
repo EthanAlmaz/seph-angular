@@ -1,0 +1,515 @@
+<div class="vinculation-section">
+
+  <!-- Encabezado de la sección. -->
+  <div class="section-header">
+
+    <div>
+
+      <h2>
+        Datos de Vinculación
+      </h2>
+
+      <p>
+        Capture la información correspondiente al
+        reporte de vinculación institucional.
+      </p>
+
+    </div>
+
+    <!-- Cambio entre captura y vista previa. -->
+    <div class="view-actions">
+
+      <button
+        type="button"
+        class="btn-secondary"
+        [class.active]="activeView === 'capture'"
+        (click)="showCapture()">
+
+        Captura
+
+      </button>
+
+      <button
+        type="button"
+        class="btn-secondary"
+        [class.active]="activeView === 'preview'"
+        (click)="showPreview()">
+
+        Vista previa
+
+      </button>
+
+    </div>
+
+  </div>
+
+  <!-- Mensajes de guardado, actualización o validación. -->
+  <div
+    class="notification"
+    [class.success]="saveMessageType === 'success'"
+    [class.error]="saveMessageType === 'error'"
+    *ngIf="saveMessage">
+
+    {{ saveMessage }}
+
+  </div>
+
+  <!-- Acciones disponibles cuando el reporte ya existe. -->
+<div
+  class="edit-actions"
+  *ngIf="reportSaved">
+
+  <button
+    type="button"
+    class="btn-edit"
+    *ngIf="!isEditing"
+    (click)="enableEdit()">
+
+    Editar información
+
+  </button>
+
+  <button
+    type="button"
+    class="btn-cancel"
+    *ngIf="isEditing"
+    (click)="cancelEdit()">
+
+    Cancelar edición
+
+  </button>
+
+  <span
+    class="editing-message"
+    *ngIf="isEditing">
+
+    Editando reporte...
+
+  </span>
+
+</div>
+
+  <!-- Vista de captura. -->
+  <div
+    *ngIf="activeView === 'capture'"
+    class="form-page">
+
+    <div class="form-grid">
+
+      <!-- Total de convenios activos. -->
+      <div class="field-card">
+
+        <label for="totalConveniosActivos">
+          Total de convenios activos
+        </label>
+
+        <input
+          id="totalConveniosActivos"
+          type="number"
+          min="0"
+          [disabled]="reportSaved && !isEditing"
+          [(ngModel)]="vinculationReport.totalConveniosActivos" />
+
+      </div>
+
+      <!-- Prácticas profesionales. -->
+      <div class="field-card">
+
+        <label for="practicasProfesionales">
+          ¿Cuenta con prácticas profesionales?
+        </label>
+
+        <select
+          id="practicasProfesionales"
+          [disabled]="reportSaved && !isEditing"
+          [(ngModel)]="vinculationReport.practicasProfesionales">
+
+          <option [ngValue]="true">
+            Sí
+          </option>
+
+          <option [ngValue]="false">
+            No
+          </option>
+
+        </select>
+
+      </div>
+
+      <!-- Servicio social. -->
+      <div class="field-card">
+
+        <label for="servicioSocial">
+          ¿Cuenta con servicio social?
+        </label>
+
+        <select
+          id="servicioSocial"
+          [disabled]="reportSaved && !isEditing"
+          [(ngModel)]="vinculationReport.servicioSocial">
+
+          <option [ngValue]="true">
+            Sí
+          </option>
+
+          <option [ngValue]="false">
+            No
+          </option>
+
+        </select>
+
+      </div>
+
+      <!-- Seguimiento de egresados. -->
+      <div class="field-card">
+
+        <label for="seguimientoEgresados">
+          ¿Realiza seguimiento de egresados?
+        </label>
+
+        <select
+          id="seguimientoEgresados"
+          [disabled]="reportSaved && !isEditing"
+          [(ngModel)]="vinculationReport.seguimientoEgresados">
+
+          <option [ngValue]="true">
+            Sí
+          </option>
+
+          <option [ngValue]="false">
+            No
+          </option>
+
+        </select>
+
+      </div>
+
+      <!-- Mecanismo de seguimiento. -->
+      <div class="field-card">
+
+        <label for="mecanismoSeguimiento">
+          Mecanismo de seguimiento
+        </label>
+
+        <select
+          id="mecanismoSeguimiento"
+          [disabled]="reportSaved && !isEditing"
+          [(ngModel)]="vinculationReport.idMecanismoSeguimiento">
+
+          <option [ngValue]="null">
+            Seleccione...
+          </option>
+
+          <option
+            *ngFor="let mecanismo of mecanismos"
+            [ngValue]="mecanismo.id">
+
+            {{ mecanismo.strValor }}
+
+          </option>
+
+        </select>
+
+      </div>
+
+      <!-- Porcentaje de egresados laborando. -->
+      <div class="field-card">
+
+        <label for="porcentajeLaborando">
+          Porcentaje de egresados laborando
+        </label>
+
+        <input
+          id="porcentajeLaborando"
+          type="number"
+          min="0"
+          max="100"
+          [disabled]="reportSaved && !isEditing"
+          [(ngModel)]="vinculationReport.porcentajeLaborando" />
+
+      </div>
+
+     <!--
+      Sectores vinculados.
+
+      Permite seleccionar uno o varios sectores,
+      agregarlos a una lista y quitarlos
+      de forma individual.
+    -->
+    <div class="field-card sectores full-width">
+
+      <label for="sectorVinculado">
+        Sector vinculado
+      </label>
+
+      <div class="inline-field">
+
+        <select
+          id="sectorVinculado"
+          name="sectorVinculadoSeleccionado"
+          [disabled]="reportSaved && !isEditing"
+          [(ngModel)]="selectedSectorId">
+
+          <option [ngValue]="null">
+            Seleccione
+          </option>
+
+          <option
+            *ngFor="let sector of sectoresVinculados"
+            [ngValue]="sector.id">
+
+            {{ sector.strValor }}
+
+          </option>
+
+        </select>
+
+        <button
+          type="button"
+          class="btn-agregar"
+          [disabled]="reportSaved && !isEditing"
+          (click)="addSector()">
+
+          Agregar
+
+        </button>
+
+      </div>
+
+      <!-- Campo utilizado cuando se selecciona Otro. -->
+      <div
+        class="otro-sector-field"
+        *ngIf="selectedSectorId === 6">
+
+        <label for="otroSector">
+          Otro (especifique)
+        </label>
+
+        <input
+          id="otroSector"
+          name="otroSector"
+          type="text"
+          maxlength="200"
+          [disabled]="reportSaved && !isEditing"
+          [(ngModel)]="otroSector" />
+
+      </div>
+
+      <label>
+        Sectores vinculados agregados
+      </label>
+
+      <div class="added-list">
+
+        <p
+          class="empty-hint"
+          *ngIf="
+            vinculationReport.sectoresVinculados.length === 0
+          ">
+
+          Aún no has agregado ningún sector vinculado.
+
+        </p>
+
+        <div
+          class="added-item"
+          *ngFor="
+            let sector
+            of vinculationReport.sectoresVinculados
+          ">
+
+          <span>
+
+            {{ getSectorName(sector.idSectorVinculado) }}
+
+            <ng-container *ngIf="sector.strOtros">
+              - {{ sector.strOtros }}
+            </ng-container>
+
+          </span>
+
+          <button
+            type="button"
+            class="btn-quitar"
+            *ngIf="!reportSaved || isEditing"
+            (click)="removeSector(
+              sector.idSectorVinculado
+            )">
+
+            ✕
+
+          </button>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+<!-- Vista previa. -->
+<div
+  *ngIf="activeView === 'preview'"
+  class="preview-page">
+
+    <div class="preview-grid">
+
+      <!-- Resumen general. -->
+      <div class="preview-card">
+
+        <h3>
+          Información general
+        </h3>
+
+        <p>
+
+          <strong>
+            Periodo:
+          </strong>
+
+          {{ periodo }}
+
+        </p>
+
+        
+
+        <p>
+
+          <strong>
+            Convenios activos:
+          </strong>
+
+          {{ vinculationReport.totalConveniosActivos }}
+
+        </p>
+
+        <p>
+
+          <strong>
+            Prácticas profesionales:
+          </strong>
+
+          {{
+            vinculationReport.practicasProfesionales
+              ? 'Sí'
+              : 'No'
+          }}
+
+        </p>
+
+        <p>
+
+          <strong>
+            Servicio social:
+          </strong>
+
+          {{
+            vinculationReport.servicioSocial
+              ? 'Sí'
+              : 'No'
+          }}
+
+        </p>
+
+        <p>
+
+          <strong>
+            Seguimiento de egresados:
+          </strong>
+
+          {{
+            vinculationReport.seguimientoEgresados
+              ? 'Sí'
+              : 'No'
+          }}
+
+        </p>
+
+        <p>
+
+          <strong>
+            Mecanismo:
+          </strong>
+
+          {{ getMecanismoName() }}
+
+        </p>
+
+        <p>
+
+          <strong>
+            Porcentaje de egresados laborando:
+          </strong>
+
+          {{ vinculationReport.porcentajeLaborando ?? 0 }}%
+
+        </p>
+
+      </div>
+
+      <!-- Sectores vinculados. -->
+      <div class="preview-card">
+
+        <h3>
+          Sectores vinculados
+        </h3>
+
+        <ul
+          *ngIf="
+            vinculationReport.sectoresVinculados.length > 0
+          ">
+
+          <li
+            *ngFor="
+              let sector
+              of vinculationReport.sectoresVinculados
+            ">
+
+            {{ getSectorName(sector.idSectorVinculado) }}
+
+            <span *ngIf="sector.strOtros">
+              - {{ sector.strOtros }}
+            </span>
+
+          </li>
+
+        </ul>
+
+        <p
+          *ngIf="
+            vinculationReport.sectoresVinculados.length === 0
+          ">
+
+          No hay sectores vinculados registrados.
+
+        </p>
+
+      </div>
+
+    </div>
+
+    <!-- Gráfica de convenios activos. -->
+    <div class="charts-grid">
+
+      <app-bar-chart
+        [title]="'Convenios activos'"
+        [labels]="['Convenios']"
+        [series]="[
+          {
+            name: 'Total',
+            values: [
+              vinculationReport.totalConveniosActivos ?? 0
+            ]
+          }
+        ]">
+
+      </app-bar-chart>
+
+    </div>
+
+  </div>
+
+</div>

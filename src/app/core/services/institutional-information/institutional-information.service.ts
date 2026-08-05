@@ -42,6 +42,20 @@ import { ReporteInfraestructuraComparativoResponse }
 import { ReporteInfraestructuraEstadisticasResponse }
   from '../../../shared/models/institutional-information/infrastructure/responses/reporteInfraestructuraEstadisticasResponse';
 
+import { CreateReporteVinculacionRequest }
+  from '../../../shared/models/institutional-information/vinculation/requests/createReporteVinculacionRequest';
+
+import { UpdateReporteVinculacionRequest }
+  from '../../../shared/models/institutional-information/vinculation/requests/updateReporteVinculacionRequest';
+
+import { ReporteVinculacionResponse }
+  from '../../../shared/models/institutional-information/vinculation/responses/reporteVinculacionResponse';
+
+import { ReporteVinculacionComparativoResponse }
+  from '../../../shared/models/institutional-information/vinculation/responses/reporteVinculacionComparativoResponse';
+
+import { ReporteVinculacionEstadisticasResponse }
+  from '../../../shared/models/institutional-information/vinculation/responses/reporteVinculacionEstadisticasResponse';
 /* URL base del backend. */
 const API_URL = 'https://localhost:7160/api/v1';
 
@@ -252,6 +266,76 @@ getReporteInfraestructuraEstadisticas(
     ApiResponse<ReporteInfraestructuraEstadisticasResponse>
   >(
     `${API_URL}/Infraestructura/estadisticas/${idMapInstitucionPeriodo}`
+  );
+}
+
+/*
+ * Obtiene el reporte de vinculación
+ * registrado para un periodo institucional.
+ */
+getReporteVinculacion(
+  idMapInstitucionPeriodo: number
+) {
+  return this.http.get<
+    ApiResponse<ReporteVinculacionResponse>
+  >(
+    `${API_URL}/Vinculacion/reporte/${idMapInstitucionPeriodo}`
+  );
+}
+
+/*
+ * Registra el reporte de vinculación.
+ */
+createReporteVinculacion(
+  request: CreateReporteVinculacionRequest
+) {
+  return this.http.post<
+    ApiResponse<ReporteVinculacionResponse>
+  >(
+    `${API_URL}/Vinculacion/reporte`,
+    request
+  );
+}
+
+/*
+ * Actualiza el reporte de vinculación.
+ */
+updateReporteVinculacion(
+  request: UpdateReporteVinculacionRequest
+) {
+  return this.http.put<
+    ApiResponse<ReporteVinculacionResponse>
+  >(
+    `${API_URL}/Vinculacion/reporte`,
+    request
+  );
+}
+
+/*
+ * Obtiene el comparativo del reporte
+ * de vinculación con el periodo anterior.
+ */
+getReporteVinculacionComparativo(
+  idMapInstitucionPeriodo: number
+) {
+  return this.http.get<
+    ApiResponse<ReporteVinculacionComparativoResponse[]>
+  >(
+    `${API_URL}/Vinculacion/reporte-comparativo/${idMapInstitucionPeriodo}`
+  );
+}
+
+/*
+ * Obtiene las estadísticas del
+ * reporte de vinculación.
+ */
+getReporteVinculacionEstadisticas(
+  idMapInstitucionPeriodo: number
+) {
+  return this.http.get<
+    ApiResponse<ReporteVinculacionEstadisticasResponse>
+  >(
+    `${API_URL}/Vinculacion/estadisticas/${idMapInstitucionPeriodo}`
   );
 }
 

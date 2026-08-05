@@ -11,10 +11,14 @@ import { NivelAcademicoResponse } from '../../../shared/models/catalogs/response
 import { InternetResponse } from '../../../shared/models/catalogs/responses/internetResponse';
 import { DiscapacitadoResponse } from '../../../shared/models/catalogs/responses/discapacitadoResponse';
 import { PeriodResponse } from '../../../shared/models/catalogs/responses/periodResponse';
+import { MecanismoResponse }from '../../../shared/models/catalogs/responses/mecanismoResponse';
+import { SectorVinculadoResponse }from '../../../shared/models/catalogs/responses/sectorVinculadoResponse';
 
 import { CreatePeriodRequest } from '../../../shared/models/catalogs/requests/createPeriodRequest';
 import { UpdatePeriodRequest } from '../../../shared/models/catalogs/requests/updatePeriodRequest';
 import { ChangePeriodStatusRequest } from '../../../shared/models/catalogs/requests/changePeriodStatusRequest';
+
+
 
 @Injectable({
   providedIn: 'root'
@@ -123,4 +127,33 @@ export class CatalogService {
       request
     );
   }
+
+  /*
+   * Obtiene el catálogo de
+   * mecanismos de seguimiento.
+   */
+  getMecanismos():
+    Observable<ApiResponse<MecanismoResponse[]>> {
+
+    return this.http.get<
+      ApiResponse<MecanismoResponse[]>
+    >(
+      `${this.catalogosUrl}/mecanismo`
+    );
+  }
+
+  /*
+   * Obtiene el catálogo de
+   * sectores vinculados.
+   */
+  getSectoresVinculados():
+    Observable<ApiResponse<SectorVinculadoResponse[]>> {
+
+    return this.http.get<
+      ApiResponse<SectorVinculadoResponse[]>
+    >(
+      `${this.catalogosUrl}/sector-vinculado`
+    );
+  }
+
 }

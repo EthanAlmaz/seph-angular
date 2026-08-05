@@ -35,7 +35,7 @@
         Inicio
       </a>
 
-      <!-- En un futuro puede dirigir al concentrado de registros. -->
+    
       <a
         class="menu-item"
         routerLink="/institutional-information">
@@ -64,25 +64,32 @@
       </a>
 
       <!-- Módulo de captura de información de infraestructura. -->
-<button
-  type="button"
-  class="menu-item infrastructure-menu-item"
-  [class.active]="currentStep === 3"
-  [class.disabled]="!personalCompleted"
-  [disabled]="!personalCompleted"
-  (click)="goToStep(3)">
+    <button
+      type="button"
+      class="menu-item infrastructure-menu-item"
+      [class.active]="currentStep === 3"
+      [class.disabled]="!personalCompleted"
+      [disabled]="!personalCompleted"
+      (click)="goToStep(3)">
 
-  Datos de Infraestructura
+      Datos de Infraestructura
 
-</button>
+    </button>
 
       <a class="menu-item disabled">
         Datos de Finanzas
       </a>
 
-      <a class="menu-item disabled">
-        Vinculación y Resultados
-      </a>
+       <!-- Módulo de vinculación y resultados. -->
+<button
+  type="button"
+  class="menu-item"
+  [class.active]="currentStep === 5"
+  (click)="goToStep(5)">
+
+  Vinculación y Resultados
+
+</button>
 
       <a class="menu-item disabled">
         Análisis Estratégico
@@ -111,39 +118,40 @@
 
         </button>
 
-   <!-- Indicadores de avance de los módulos institucionales. -->
-      <div class="steps">
+        <!-- Indicadores de avance de los módulos institucionales. -->
+        <div class="steps">
 
-        <div
-          class="step"
-          [class.active]="currentStep === 1"
-          [class.completed]="enrollmentCompleted">
+          <div
+            class="step"
+            [class.active]="currentStep === 1"
+            [class.completed]="enrollmentCompleted">
 
-          <span>
-            {{ enrollmentCompleted ? '✓' : '1' }}
-          </span>
+            <span>
+              {{ enrollmentCompleted ? '✓' : '1' }}
+            </span>
 
-          <p>
-            Datos de Matrículas
-          </p>
+            <p>
+              Datos de Matrículas
+            </p>
 
-        </div>
+          </div>
 
-        <div
-          class="step"
-          [class.active]="currentStep === 2">
+          <div
+            class="step"
+            [class.active]="currentStep === 2"
+            [class.completed]="personalCompleted">
 
-          <span>
-            2
-          </span>
+            <span>
+              {{ personalCompleted ? '✓' : '2' }}
+            </span>
 
-          <p>
-            Datos del Personal
-          </p>
+            <p>
+              Datos del Personal
+            </p>
 
-        </div>
+          </div>
 
-        <div
+                <div
         class="step"
         [class.active]="currentStep === 3">
 
@@ -157,51 +165,77 @@
 
       </div>
 
-      </div>
+          <!-- Finanzas corresponde al paso 4,
+               pero todavía no se integra en este desarrollo. -->
+
+          <div
+            class="step"
+            [class.active]="currentStep === 5">
+
+            <span>
+              5
+            </span>
+
+            <p>
+              Vinculación y Resultados
+            </p>
+
+          </div>
+
+        </div>
 
         <!-- Guarda la información de la sección activa. -->
-<button
-  class="btn-nav"
-  type="button"
-  [disabled]="
-    isSaving ||
-    (
-      currentStep === 1 &&
-      enrollmentDataComponent?.reportSaved &&
-      !enrollmentDataComponent?.isEditing
-    ) ||
-    (
-      currentStep === 2 &&
-      personalDataComponent?.reportSaved &&
-      !personalDataComponent?.isEditing
-    ) ||
-    (
-      currentStep === 3 &&
-      infrastructureDataComponent?.reportSaved &&
-      !infrastructureDataComponent?.isEditing
-    )
-  "
-  (click)="saveCurrentSection()">
+        <button
+          class="btn-nav"
+          type="button"
+          [disabled]="
+            isSaving ||
+            (
+              currentStep === 1 &&
+              enrollmentDataComponent?.reportSaved &&
+              !enrollmentDataComponent?.isEditing
+            ) ||
+            (
+              currentStep === 2 &&
+              personalDataComponent?.reportSaved &&
+              !personalDataComponent?.isEditing
+            ) ||
+            (
+              currentStep === 3 &&
+              infrastructureDataComponent?.reportSaved &&
+              !infrastructureDataComponent?.isEditing
+            ) ||
+            (
+              currentStep === 5 &&
+              vinculationDataComponent?.reportSaved &&
+              !vinculationDataComponent?.isEditing
+            )
+          "
+          (click)="saveCurrentSection()">
 
-  {{
-    isSaving
-      ? 'Guardando...'
-      : currentStep === 1 &&
-        enrollmentDataComponent?.reportSaved &&
-        enrollmentDataComponent?.isEditing
-        ? 'Guardar cambios'
-        : currentStep === 2 &&
-          personalDataComponent?.reportSaved &&
-          personalDataComponent?.isEditing
-          ? 'Guardar cambios'
-          : currentStep === 3 &&
-            infrastructureDataComponent?.reportSaved &&
-            infrastructureDataComponent?.isEditing
-            ? 'Guardar cambios'
-            : 'Guardar'
-  }}
+          {{
+            isSaving
+              ? 'Guardando...'
+              : currentStep === 1 &&
+                enrollmentDataComponent?.reportSaved &&
+                enrollmentDataComponent?.isEditing
+                ? 'Guardar cambios'
+                : currentStep === 2 &&
+                  personalDataComponent?.reportSaved &&
+                  personalDataComponent?.isEditing
+                  ? 'Guardar cambios'
+                  : currentStep === 3 &&
+                    infrastructureDataComponent?.reportSaved &&
+                    infrastructureDataComponent?.isEditing
+                    ? 'Guardar cambios'
+                    : currentStep === 5 &&
+                      vinculationDataComponent?.reportSaved &&
+                      vinculationDataComponent?.isEditing
+                      ? 'Guardar cambios'
+                      : 'Guardar'
+          }}
 
-</button>
+        </button>
 
       </div>
 
@@ -216,28 +250,29 @@
 
       </div>
 
-     <!-- Formulario del módulo de matrícula. -->
-    <app-enrollment-data
-      *ngIf="currentStep === 1">
-    </app-enrollment-data>
+      <!-- Formulario del módulo de matrícula. -->
+      <app-enrollment-data
+        *ngIf="currentStep === 1">
+      </app-enrollment-data>
 
-    <!-- Formulario del módulo de personal. -->
-    <app-personal-data
-  *ngIf="currentStep === 2"
-  (personalCompletedChange)="personalCompleted = $event">
-</app-personal-data>
+      <!-- Formulario del módulo de personal. -->
+      <app-personal-data
+        *ngIf="currentStep === 2"
+        (personalCompletedChange)="personalCompleted = $event">
+      </app-personal-data>
 
-        <!-- Formulario del módulo de infraestructura. -->
-    <app-infrastructure-data
-      *ngIf="currentStep === 3">
-    </app-infrastructure-data>
+      <!-- Formulario del módulo de infraestructura. -->
+      <app-infrastructure-data
+        *ngIf="currentStep === 3">
+      </app-infrastructure-data>
+
+      <!-- Formulario del módulo de vinculación. -->
+      <app-vinculation-data
+        *ngIf="currentStep === 5">
+      </app-vinculation-data>
 
     </section>
 
   </main>
 
 </div>
-
-
-
-
