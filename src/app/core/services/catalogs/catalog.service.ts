@@ -18,6 +18,9 @@ import { CreatePeriodRequest } from '../../../shared/models/catalogs/requests/cr
 import { UpdatePeriodRequest } from '../../../shared/models/catalogs/requests/updatePeriodRequest';
 import { ChangePeriodStatusRequest } from '../../../shared/models/catalogs/requests/changePeriodStatusRequest';
 
+import { TipoPeriodoResponse } from '../../../shared/models/catalogs/responses/tipoPeriodoResponse';
+
+
 
 
 @Injectable({
@@ -125,6 +128,13 @@ export class CatalogService {
     return this.http.patch<ApiResponse<boolean>>(
       `${this.apiBaseUrl}/CatPeriodo/${id}/status`,
       request
+    );
+  }
+
+    /* Obtiene los tipos de periodo disponibles. */
+  getTiposPeriodo(): Observable<ApiResponse<TipoPeriodoResponse[]>> {
+    return this.http.get<ApiResponse<TipoPeriodoResponse[]>>(
+    `${this.catalogosUrl}/tipos-periodo`
     );
   }
 

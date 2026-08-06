@@ -6,6 +6,8 @@ import { CatalogService } from '../../../../core/services/catalogs/catalog.servi
 import { CreatePeriodRequest } from '../../../../shared/models/catalogs/requests/createPeriodRequest';
 import { UpdatePeriodRequest } from '../../../../shared/models/catalogs/requests/updatePeriodRequest';
 import { HttpErrorResponse } from '@angular/common/http';
+
+import { TipoPeriodoResponse } from '../../../../shared/models/catalogs/responses/tipoPeriodoResponse';
 /* Alta y edición de periodos.
 Si la ruta contiene un :id, se carga el periodo correspondiente
 y el formulario actualiza el registro en lugar de crear uno nuevo.
@@ -34,22 +36,54 @@ export class PeriodCreateComponent implements OnInit {
   notificationMessage = signal('');
   notificationType = signal<'success' | 'error'>('success');
 
+  tiposPeriodo = signal<TipoPeriodoResponse[]>([]);
+  tipoPeriodoNombre = signal('');
+
   periodo: CreatePeriodRequest = {
     intAnio: new Date().getFullYear(),
     intNumeroPeriodo: 1,
     dateFechaInicio: '',
-    dateFechaFin: ''
+    dateFechaFin: '',
+   idTipoPeriodo: 0
+    
   };
 
   ngOnInit(): void {
-    const idParam = this.route.snapshot.paramMap.get('id');
+  this.loadTiposPeriodo();
 
-    if (idParam) {
-      this.periodoId = Number(idParam);
-      this.loadPeriodo(this.periodoId);
-    }
+  const idParam = this.route.snapshot.paramMap.get('id');
+
+  if (idParam) {
+    this.periodoId = Number(idParam);
+    this.loadPeriodo(this.periodoId);
   }
+}
+/* Carga los tipos de periodo disponibles. */
+private loadTiposPeriodo(): void {
+  this.catalogService.getTiposPeriodo().subscribe({
+    next: (response) => {
+      this.tiposPeriodo.set(
+        (response.data ?? []).filter(
+          tipoPeriodo => tipoPeriodo.bitActivo
+        )
+      );
 
+      // Recalcula el tipo cuando ya existen fechas cargadas.
+      this.calcularTipoPeriodo();
+    },
+    error: (error) => {
+      console.error(
+        'Error cargando tipos de periodo:',
+        error
+      );
+
+      this.showNotification(
+        'No fue posible cargar los tipos de periodo.',
+        'error'
+      );
+    }
+  });
+}
   /* Consulta los periodos y localiza el registro que será editado. */
   loadPeriodo(id: number): void {
     this.isLoading.set(true);
@@ -71,15 +105,25 @@ export class PeriodCreateComponent implements OnInit {
         }
 
         this.periodo = {
-          intAnio: registro.intAnio,
-          intNumeroPeriodo: registro.intNumeroPeriodo,
-          dateFechaInicio: registro.dateFechaInicio
-            ? registro.dateFechaInicio.split('T')[0]
-            : '',
-          dateFechaFin: registro.dateFechaFin
-            ? registro.dateFechaFin.split('T')[0]
-            : ''
-        };
+  intAnio: registro.intAnio,
+  intNumeroPeriodo: registro.intNumeroPeriodo,
+
+  dateFechaInicio: registro.dateFechaInicio
+    ? registro.dateFechaInicio.split('T')[0]
+    : '',
+
+  dateFechaFin: registro.dateFechaFin
+    ? registro.dateFechaFin.split('T')[0]
+    : '',
+
+  idTipoPeriodo: registro.idTipoPeriodo
+};
+
+this.tipoPeriodoNombre.set(
+  registro.strTipoPeriodo ?? ''
+);
+
+this.calcularTipoPeriodo();
 
         this.isLoading.set(false);
       },
@@ -95,6 +139,108 @@ export class PeriodCreateComponent implements OnInit {
       }
     });
   }
+/* Calcula automáticamente el tipo de periodo más cercano
+con base en los tipos activos registrados en el catálogo. */
+calcularTipoPeriodo(): void {
+  const fechaInicioTexto = this.periodo.dateFechaInicio;
+  const fechaFinTexto = this.periodo.dateFechaFin;
+
+  if (!fechaInicioTexto || !fechaFinTexto) {
+    this.limpiarTipoPeriodo();
+    return;
+  }
+
+  const fechaInicio = new Date(
+    `${fechaInicioTexto}T00:00:00`
+  );
+
+  const fechaFin = new Date(
+    `${fechaFinTexto}T00:00:00`
+  );
+
+  if (fechaFin < fechaInicio) {
+    this.limpiarTipoPeriodo();
+    return;
+  }
+
+  const milisegundosPorDia =
+    1000 * 60 * 60 * 24;
+
+  const numeroDias =
+    Math.floor(
+      (
+        fechaFin.getTime() -
+        fechaInicio.getTime()
+      ) / milisegundosPorDia
+    ) + 1;
+
+  const tiposActivos = this.tiposPeriodo()
+    .filter(tipo => tipo.bitActivo);
+
+  if (tiposActivos.length === 0) {
+    this.limpiarTipoPeriodo();
+
+    this.tipoPeriodoNombre.set(
+      'No existen tipos de periodo activos'
+    );
+
+    return;
+  }
+
+  /*
+   Busca el tipo cuya duración esperada sea
+   la más cercana a la duración capturada.
+  */
+  const candidatos = tiposActivos.map(tipo => {
+    const diasEsperados =
+      tipo.intNumeroMeses * 30.4375;
+
+    const diferenciaDias =
+      Math.abs(numeroDias - diasEsperados);
+
+    const toleranciaDias =
+      diasEsperados * 0.15;
+
+    return {
+      tipo,
+      diferenciaDias,
+      toleranciaDias
+    };
+  });
+
+  candidatos.sort(
+    (a, b) =>
+      a.diferenciaDias - b.diferenciaDias
+  );
+
+  const mejorCoincidencia = candidatos[0];
+
+  if (
+    !mejorCoincidencia ||
+    mejorCoincidencia.diferenciaDias >
+      mejorCoincidencia.toleranciaDias
+  ) {
+    this.limpiarTipoPeriodo();
+
+    this.tipoPeriodoNombre.set(
+      'La duración no corresponde a un tipo de periodo registrado'
+    );
+
+    return;
+  }
+
+  this.periodo.idTipoPeriodo =
+    mejorCoincidencia.tipo.id;
+
+  this.tipoPeriodoNombre.set(
+    mejorCoincidencia.tipo.strValor
+  );
+}
+/* Limpia el tipo calculado cuando las fechas no son válidas. */
+private limpiarTipoPeriodo(): void {
+  this.periodo.idTipoPeriodo = 0;
+  this.tipoPeriodoNombre.set('');
+}
 
 /* Registra un periodo nuevo o actualiza el periodo seleccionado. */
 savePeriodo(): void {
@@ -109,10 +255,15 @@ savePeriodo(): void {
   this.isSaving.set(true);
 
   const request: UpdatePeriodRequest = {
-    intAnio: this.periodo.intAnio,
-    intNumeroPeriodo: this.periodo.intNumeroPeriodo,
-    dateFechaInicio: this.periodo.dateFechaInicio,
-    dateFechaFin: this.periodo.dateFechaFin
+      intAnio: this.periodo.intAnio,
+  intNumeroPeriodo:
+    this.periodo.intNumeroPeriodo,
+  dateFechaInicio:
+    this.periodo.dateFechaInicio,
+  dateFechaFin:
+    this.periodo.dateFechaFin,
+  idTipoPeriodo:
+    this.periodo.idTipoPeriodo
   };
 
   if (this.periodoId) {
@@ -271,7 +422,13 @@ private updatePeriodo(
       );
       return false;
     }
-
+    if (!this.periodo.idTipoPeriodo) {
+      this.showNotification(
+       'Las fechas deben corresponder a un periodo bimestral o cuatrimestral.',
+       'error'
+  );
+  return false;
+}
     return true;
   }
 

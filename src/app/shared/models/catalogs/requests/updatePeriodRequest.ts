@@ -1,6 +1,7 @@
 export interface UpdatePeriodRequest {
-  intAnio: number;
+   intAnio: number;
   intNumeroPeriodo: number;
   dateFechaInicio: string;
   dateFechaFin: string;
+  idTipoPeriodo: number;
 }

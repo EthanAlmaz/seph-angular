@@ -1,0 +1,215 @@
+<!--
+  Formulario para asignar un periodo a una institución.
+  El mismo componente permite registrar y editar asignaciones.
+-->
+<div class="create-page">
+
+  <!-- Encabezado del formulario. -->
+  <div class="create-header">
+
+    <div class="create-title">
+
+      <h2>
+        {{
+          assignmentId
+            ? 'Editar Asignación de Periodo'
+            : 'Asignar Periodo a Institución'
+        }}
+      </h2>
+
+      <p>
+        {{
+          assignmentId
+            ? 'Actualiza los datos de la asignación seleccionada'
+            : 'Selecciona una institución y el periodo que tendrá disponible'
+        }}
+      </p>
+
+    </div>
+
+    <a
+      class="btn-secondary"
+      routerLink="/admin/institution-periods">
+      Volver al concentrado
+    </a>
+
+  </div>
+
+  <!-- Notificación visual del formulario. -->
+  @if (notificationMessage()) {
+    <div
+      class="notification"
+      [class.success]="notificationType() === 'success'"
+      [class.error]="notificationType() === 'error'">
+
+      {{ notificationMessage() }}
+
+    </div>
+  }
+
+  <!-- Estado de carga al editar una asignación. -->
+  @if (isLoading()) {
+    <p class="loading">
+      Cargando información de la asignación...
+    </p>
+  } @else {
+
+    <form
+      class="form-card"
+      (ngSubmit)="saveAssignment()">
+
+      <div class="form-grid">
+
+        <!-- Institución que recibirá el periodo. -->
+        <div class="field-card">
+
+          <label for="idInstitucion">
+            Institución *
+          </label>
+
+          <select
+            id="idInstitucion"
+            name="idInstitucion"
+            [(ngModel)]="assignment.idInstitucion">
+
+            <option [ngValue]="0">
+              Selecciona una institución
+            </option>
+
+            @for (
+              institution of institutions();
+              track institution.id
+            ) {
+              <option [ngValue]="institution.id">
+                {{
+                  institution.strSiglas
+                    ? institution.strSiglas + ' - ' + institution.strNombre
+                    : institution.strNombre
+                }}
+              </option>
+            }
+
+          </select>
+
+        </div>
+
+        <!-- Periodo institucional que será asignado. -->
+        <div class="field-card">
+
+          <label for="idPeriodo">
+            Periodo *
+          </label>
+
+          <select
+            id="idPeriodo"
+            name="idPeriodo"
+            [(ngModel)]="assignment.idPeriodo">
+
+            <option [ngValue]="0">
+              Selecciona un periodo
+            </option>
+
+           @for (
+  period of periods();
+  track period.id
+) {
+  <option [ngValue]="period.id">
+    {{ period.strNombre }} — {{ period.strTipoPeriodo }}
+  </option>
+}
+
+          </select>
+
+        </div>
+
+        <!-- Fecha en la que inicia la captura institucional. -->
+        <div class="field-card">
+
+          <label for="dateFechaApertura">
+            Fecha de apertura
+          </label>
+
+          <input
+            id="dateFechaApertura"
+            type="date"
+            name="dateFechaApertura"
+            [(ngModel)]="assignment.dateFechaApertura"
+          />
+
+        </div>
+
+        <!-- Fecha límite para la captura institucional. -->
+        <div class="field-card">
+
+          <label for="dateFechaCierre">
+            Fecha de cierre
+          </label>
+
+          <input
+            id="dateFechaCierre"
+            type="date"
+            name="dateFechaCierre"
+            [(ngModel)]="assignment.dateFechaCierre"
+          />
+
+        </div>
+
+        <!-- Control para permitir o cerrar la captura. -->
+        <div class="field-card checkbox-card">
+
+          <label class="checkbox-label">
+
+            <input
+              type="checkbox"
+              name="bitCapturaAbierta"
+              [(ngModel)]="assignment.bitCapturaAbierta"
+            />
+
+            <span>
+              Captura institucional abierta
+            </span>
+
+          </label>
+
+          <p class="field-help">
+            Al activarla, la institución podrá registrar información
+            durante las fechas establecidas.
+          </p>
+
+        </div>
+
+      </div>
+
+      <!-- Acciones del formulario. -->
+      <div class="form-actions">
+
+        <a
+          class="btn-secondary"
+          routerLink="/admin/institution-periods">
+          Cancelar
+        </a>
+
+        <button
+          class="btn-primary"
+          type="submit"
+          [disabled]="isSaving()">
+
+          {{
+            isSaving()
+              ? 'Guardando...'
+              : (
+                  assignmentId
+                    ? 'Guardar Cambios'
+                    : 'Asignar Periodo'
+                )
+          }}
+
+        </button>
+
+      </div>
+
+    </form>
+
+  }
+
+</div>
