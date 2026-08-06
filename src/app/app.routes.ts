@@ -74,6 +74,19 @@ export const routes: Routes = [
       loadChildren: () =>
       import('./features/admin/periods/periodsRoutes')
       .then(m => m.periodsRoutes)
+      },
+      {
+      /*
+       * Administración de periodos
+       * asignados a instituciones.
+       */
+      path: 'institution-periods',
+      loadChildren: () =>
+        import(
+          './features/admin/institution-periods/institutionPeriodsRoutes'
+        ).then(
+          m => m.institutionPeriodsRoutes
+        )
       }
     
     ]

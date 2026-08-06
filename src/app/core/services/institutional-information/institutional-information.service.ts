@@ -56,6 +56,16 @@ import { ReporteVinculacionComparativoResponse }
 
 import { ReporteVinculacionEstadisticasResponse }
   from '../../../shared/models/institutional-information/vinculation/responses/reporteVinculacionEstadisticasResponse';
+
+import { MapInstitucionPeriodoResponse }
+  from '../../../shared/models/institutional-information/institution-period/responses/mapInstitucionPeriodoResponse';
+
+import { CreateMapInstitucionPeriodoRequest }
+  from '../../../shared/models/institutional-information/institution-period/requests/createMapInstitucionPeriodoRequest';
+
+import { UpdateMapInstitucionPeriodoRequest }
+  from '../../../shared/models/institutional-information/institution-period/requests/updateMapInstitucionPeriodoRequest';
+
 /* URL base del backend. */
 const API_URL = 'https://localhost:7160/api/v1';
 
@@ -336,6 +346,63 @@ getReporteVinculacionEstadisticas(
     ApiResponse<ReporteVinculacionEstadisticasResponse>
   >(
     `${API_URL}/Vinculacion/estadisticas/${idMapInstitucionPeriodo}`
+  );
+}
+
+/*
+ * Obtiene todas las asignaciones
+ * de periodos por institución.
+ */
+getMapInstitucionPeriodos() {
+  return this.http.get<
+    ApiResponse<MapInstitucionPeriodoResponse[]>
+  >(
+    `${API_URL}/MapInstitucionPeriodo`
+  );
+}
+
+/*
+ * Obtiene una asignación de periodo
+ * por su identificador.
+ */
+getMapInstitucionPeriodo(
+  id: number
+) {
+  return this.http.get<
+    ApiResponse<MapInstitucionPeriodoResponse>
+  >(
+    `${API_URL}/MapInstitucionPeriodo/${id}`
+  );
+}
+
+/*
+ * Asigna un periodo
+ * a una institución.
+ */
+createMapInstitucionPeriodo(
+  request: CreateMapInstitucionPeriodoRequest
+) {
+  return this.http.post<
+    ApiResponse<MapInstitucionPeriodoResponse>
+  >(
+    `${API_URL}/MapInstitucionPeriodo`,
+    request
+  );
+}
+
+/*
+ * Actualiza una asignación
+ * de periodo institucional.
+ */
+updateMapInstitucionPeriodo(
+  id: number,
+  request: UpdateMapInstitucionPeriodoRequest
+) {
+  return this.http.put<
+    ApiResponse<MapInstitucionPeriodoResponse>
+  >(
+    `${API_URL}/MapInstitucionPeriodo/${id}`,
+    request
   );
 }
 

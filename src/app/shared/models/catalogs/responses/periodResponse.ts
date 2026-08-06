@@ -7,4 +7,6 @@ export interface PeriodResponse {
   dateFechaInicio: string;
   dateFechaFin: string;
   bitActivo: boolean;
+  idTipoPeriodo: number;
+  strTipoPeriodo: string;
 }

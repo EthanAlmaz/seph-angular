@@ -1,0 +1,389 @@
+<!--
+  Concentrado de periodos asignados a instituciones.
+  Lista las relaciones registradas entre institución y periodo.
+-->
+<div class="summary-page">
+
+  <!-- Encabezado del concentrado y acciones principales. -->
+  <div class="summary-header">
+
+    <div class="summary-title">
+      <h2>Asignación de Periodos</h2>
+
+      <p>
+        Concentrado de periodos asignados a las instituciones
+      </p>
+    </div>
+
+    <div class="summary-actions">
+
+      <a
+        class="btn-secondary"
+        routerLink="/admin">
+        Inicio
+      </a>
+
+      <!-- Inicia el registro de una nueva asignación. -->
+  <a
+  class="btn-primary"
+  routerLink="/admin/institution-periods/new">
+  + Asignar Periodo
+</a>
+
+    </div>
+
+  </div>
+
+  <!-- Notificación visual de la pantalla. -->
+  @if (notificationMessage()) {
+    <div
+      class="notification"
+      [class.success]="notificationType() === 'success'"
+      [class.error]="notificationType() === 'error'">
+
+      {{ notificationMessage() }}
+
+    </div>
+  }
+
+  <!-- Estado de carga. -->
+  @if (isLoading()) {
+    <p class="loading">
+      Cargando asignaciones de periodos...
+    </p>
+  }
+
+  <!-- Mensaje mostrado cuando no hay registros. -->
+  @if (!isLoading() && registros().length === 0) {
+    <div class="empty-state">
+
+      <p>
+        Aún no hay periodos asignados a instituciones.
+      </p>
+
+    </div>
+  }
+
+  <!-- Tabla del concentrado. -->
+  @if (!isLoading() && registros().length > 0) {
+    <div class="table-card">
+
+      <table class="records-table">
+
+        <thead>
+          <tr>
+            <th>Institución</th>
+            <th>Siglas</th>
+            <th>Periodo</th>
+            <th>Tipo de periodo</th>
+            <th>Fecha de apertura</th>
+            <th>Fecha de cierre</th>
+            <th>Captura</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+
+        <tbody>
+
+          @for (registro of registros(); track registro.id) {
+            <tr>
+
+              <td>
+                {{ registro.strInstitucion }}
+              </td>
+
+              <td>
+                {{ registro.strSiglasInstitucion ?? '—' }}
+              </td>
+
+              <td>
+                {{ registro.strPeriodo }}
+              </td>
+
+              <td>
+                {{ registro.strTipoPeriodo }}
+              </td>
+
+              <td>
+                {{
+                  registro.dateFechaApertura
+                    ? (registro.dateFechaApertura | date:'dd/MM/yyyy')
+                    : '—'
+                }}
+              </td>
+
+              <td>
+                {{
+                  registro.dateFechaCierre
+                    ? (registro.dateFechaCierre | date:'dd/MM/yyyy')
+                    : '—'
+                }}
+              </td>
+
+              <td>
+                <span
+                  class="badge"
+                  [class.badge-complete]="registro.bitCapturaAbierta"
+                  [class.badge-incomplete]="!registro.bitCapturaAbierta">
+
+                  {{
+                    registro.bitCapturaAbierta
+                      ? 'Abierta'
+                      : 'Cerrada'
+                  }}
+
+                </span>
+              </td>
+
+              <td>
+                <span
+                  class="badge"
+                  [class.badge-complete]="registro.bitActivo"
+                  [class.badge-incomplete]="!registro.bitActivo">
+
+                  {{
+                    registro.bitActivo
+                      ? 'Activo'
+                      : 'Inactivo'
+                  }}
+
+                </span>
+              </td>
+
+              <td class="actions-cell">
+
+                <button
+                  type="button"
+                  class="btn-detalle"
+                  (click)="openDetalle(registro)">
+                  Detalle
+                </button>
+
+                 <a
+                class="btn-editar"
+                [routerLink]="[
+                '/admin/institution-periods',
+                registro.id,
+                'edit'
+                ]">
+                Editar
+                </a>
+
+              </td>
+
+            </tr>
+          }
+
+        </tbody>
+
+      </table>
+
+    </div>
+  }
+
+  <!-- Modal con el detalle de la asignación seleccionada. -->
+  @if (selectedRegistro(); as registro) {
+    <div
+      class="modal-overlay"
+      (click)="closeDetalle()">
+
+      <div
+        class="modal-card"
+        (click)="$event.stopPropagation()">
+
+        <div class="modal-header">
+
+          <h3>
+            Detalle de la asignación
+          </h3>
+
+          <button
+            type="button"
+            class="btn-close"
+            (click)="closeDetalle()">
+            ✕
+          </button>
+
+        </div>
+
+        <div class="modal-body">
+
+          <div class="detail-row">
+            <span class="detail-label">
+              Institución
+            </span>
+
+            <span class="detail-value">
+              {{ registro.strInstitucion }}
+            </span>
+          </div>
+
+          <div class="detail-row">
+            <span class="detail-label">
+              Siglas
+            </span>
+
+            <span class="detail-value">
+              {{ registro.strSiglasInstitucion ?? '—' }}
+            </span>
+          </div>
+
+          <div class="detail-row">
+            <span class="detail-label">
+              Periodo
+            </span>
+
+            <span class="detail-value">
+              {{ registro.strPeriodo }}
+            </span>
+          </div>
+
+          <div class="detail-row">
+            <span class="detail-label">
+              Descripción del periodo
+            </span>
+
+            <span class="detail-value">
+              {{ registro.strDescripcionPeriodo }}
+            </span>
+          </div>
+
+          <div class="detail-row">
+            <span class="detail-label">
+              Tipo de periodo
+            </span>
+
+            <span class="detail-value">
+              {{ registro.strTipoPeriodo }}
+            </span>
+          </div>
+
+          <div class="detail-row">
+            <span class="detail-label">
+              Año
+            </span>
+
+            <span class="detail-value">
+              {{ registro.intAnio }}
+            </span>
+          </div>
+
+          <div class="detail-row">
+            <span class="detail-label">
+              Número de periodo
+            </span>
+
+            <span class="detail-value">
+              {{ registro.intNumeroPeriodo }}
+            </span>
+          </div>
+
+          <div class="detail-row">
+            <span class="detail-label">
+              Inicio del periodo
+            </span>
+
+            <span class="detail-value">
+              {{
+                registro.dateFechaInicioPeriodo
+                  | date:'dd/MM/yyyy'
+              }}
+            </span>
+          </div>
+
+          <div class="detail-row">
+            <span class="detail-label">
+              Fin del periodo
+            </span>
+
+            <span class="detail-value">
+              {{
+                registro.dateFechaFinPeriodo
+                  | date:'dd/MM/yyyy'
+              }}
+            </span>
+          </div>
+
+          <div class="detail-row">
+            <span class="detail-label">
+              Fecha de apertura de captura
+            </span>
+
+            <span class="detail-value">
+              {{
+                registro.dateFechaApertura
+                  ? (registro.dateFechaApertura | date:'dd/MM/yyyy')
+                  : '—'
+              }}
+            </span>
+          </div>
+
+          <div class="detail-row">
+            <span class="detail-label">
+              Fecha de cierre de captura
+            </span>
+
+            <span class="detail-value">
+              {{
+                registro.dateFechaCierre
+                  ? (registro.dateFechaCierre | date:'dd/MM/yyyy')
+                  : '—'
+              }}
+            </span>
+          </div>
+
+          <div class="detail-row">
+            <span class="detail-label">
+              Estado de captura
+            </span>
+
+            <span class="detail-value">
+
+              <span
+                class="badge"
+                [class.badge-complete]="registro.bitCapturaAbierta"
+                [class.badge-incomplete]="!registro.bitCapturaAbierta">
+
+                {{
+                  registro.bitCapturaAbierta
+                    ? 'Abierta'
+                    : 'Cerrada'
+                }}
+
+              </span>
+
+            </span>
+          </div>
+
+          <div class="detail-row">
+            <span class="detail-label">
+              Estado del registro
+            </span>
+
+            <span class="detail-value">
+
+              <span
+                class="badge"
+                [class.badge-complete]="registro.bitActivo"
+                [class.badge-incomplete]="!registro.bitActivo">
+
+                {{
+                  registro.bitActivo
+                    ? 'Activo'
+                    : 'Inactivo'
+                }}
+
+              </span>
+
+            </span>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+  }
+
+</div>

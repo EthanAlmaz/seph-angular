@@ -3,4 +3,5 @@ export interface CreatePeriodRequest {
   intNumeroPeriodo: number;
   dateFechaInicio: string;
   dateFechaFin: string;
+  idTipoPeriodo: number;
 }

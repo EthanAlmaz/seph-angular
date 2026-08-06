@@ -77,6 +77,7 @@
             type="date"
             name="dateFechaInicio"
             [(ngModel)]="periodo.dateFechaInicio"
+            (ngModelChange)="calcularTipoPeriodo()"
           />
         </div>
 
@@ -87,10 +88,24 @@
             type="date"
             name="dateFechaFin"
             [(ngModel)]="periodo.dateFechaFin"
+            (ngModelChange)="calcularTipoPeriodo()"
           />
         </div>
 
+        <div class="field-card">
+        <label>Tipo de periodo</label>
+
+      <input
+        type="text"
+        name="tipoPeriodo"
+        readonly
+        [value]="tipoPeriodoNombre()"
+        placeholder="Se calculará con base en las fechas"
+      />
       </div>
+      </div>
+
+
 
       <button
         class="btn-primary"
