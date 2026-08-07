@@ -1,0 +1,642 @@
+<div class="finance-section">
+
+  <!-- Encabezado de la sección. -->
+  <div class="section-header">
+
+    <div>
+
+      <h2>
+        Datos de Finanzas
+      </h2>
+
+      <p>
+        Capture la información correspondiente al
+        reporte financiero institucional.
+      </p>
+
+    </div>
+
+    <!-- Cambio entre captura y vista previa. -->
+    <div class="view-actions">
+
+      <button
+        type="button"
+        class="btn-secondary"
+        [class.active]="activeView === 'capture'"
+        (click)="showCapture()">
+
+        Captura
+
+      </button>
+
+      
+
+      <button
+        type="button"
+        class="btn-secondary"
+        [class.active]="activeView === 'preview'"
+        (click)="showPreview()">
+
+        Vista previa
+
+      </button>
+
+    </div>
+
+  </div>
+
+  <!-- Mensajes de guardado, actualización o validación. -->
+  <div
+    class="notification"
+    [class.success]="saveMessageType === 'success'"
+    [class.error]="saveMessageType === 'error'"
+    *ngIf="saveMessage">
+
+    {{ saveMessage }}
+
+  </div>
+
+  <!-- Acciones disponibles cuando el reporte ya existe. -->
+  <div
+    class="edit-actions"
+    *ngIf="reportSaved">
+
+    <button
+      type="button"
+      class="btn-edit"
+      *ngIf="!isEditing"
+      (click)="enableEdit()">
+
+      Editar información
+
+    </button>
+
+    <button
+      type="button"
+      class="btn-cancel"
+      *ngIf="isEditing"
+      (click)="cancelEdit()">
+
+      Cancelar edición
+
+    </button>
+
+    <span
+      class="editing-message"
+      *ngIf="isEditing">
+
+      Editando reporte...
+
+    </span>
+
+  </div>
+
+  <!-- Vista de captura. -->
+  <div
+    *ngIf="activeView === 'capture'"
+    class="form-page">
+
+   <div
+  class="form-grid"
+  *ngIf="capturePage === 1">
+  
+  
+      <!-- Presupuesto anual. -->
+      <div class="field-card">
+
+        <label for="presupuestoAnual">
+          Presupuesto anual
+        </label>
+
+        <input
+          id="presupuestoAnual"
+          type="number"
+          min="0"
+          step="0.01"
+          [disabled]="reportSaved && !isEditing"
+          [(ngModel)]="financeReport.presupuestoAnual" />
+
+      </div>
+
+      <!-- Subsidio estatal. -->
+      <div class="field-card">
+
+        <label for="subsidioEstatal">
+          Subsidio estatal
+        </label>
+
+        <input
+          id="subsidioEstatal"
+          type="number"
+          min="0"
+          step="0.01"
+          [disabled]="reportSaved && !isEditing"
+          [(ngModel)]="financeReport.subsidioEstatal" />
+
+      </div>
+
+      <!-- Subsidio federal. -->
+      <div class="field-card">
+
+        <label for="subsidioFederal">
+          Subsidio federal
+        </label>
+
+        <input
+          id="subsidioFederal"
+          type="number"
+          min="0"
+          step="0.01"
+          [disabled]="reportSaved && !isEditing"
+          [(ngModel)]="financeReport.subsidioFederal" />
+
+      </div>
+
+      <!-- Ingresos propios. -->
+      <div class="field-card">
+
+        <label for="ingresosPropios">
+          Ingresos propios
+        </label>
+
+        <input
+          id="ingresosPropios"
+          type="number"
+          min="0"
+          step="0.01"
+          [disabled]="reportSaved && !isEditing"
+          [(ngModel)]="financeReport.ingresosPropios" />
+
+      </div>
+
+      <!-- Gasto ejercido. -->
+      <div class="field-card">
+
+        <label for="gastoEjercido">
+          Gasto ejercido
+        </label>
+
+        <input
+          id="gastoEjercido"
+          type="number"
+          min="0"
+          step="0.01"
+          [disabled]="reportSaved && !isEditing"
+          [(ngModel)]="financeReport.gastoEjercido" />
+
+      </div>
+
+      <!-- Gasto por alumno. -->
+      <div class="field-card">
+
+        <label for="gastoAlumno">
+          Gasto por alumno
+        </label>
+
+        <input
+          id="gastoAlumno"
+          type="number"
+          min="0"
+          step="0.01"
+          [disabled]="reportSaved && !isEditing"
+          [(ngModel)]="financeReport.gastoAlumno" />
+
+      </div>
+
+      <!-- Existencia de adeudos. -->
+      <div class="field-card">
+
+        <label for="adeudos">
+          ¿La institución cuenta con adeudos?
+        </label>
+
+        <select
+          id="adeudos"
+          [disabled]="reportSaved && !isEditing"
+          [(ngModel)]="financeReport.adeudos">
+
+          <option [ngValue]="true">
+            Sí
+          </option>
+
+          <option [ngValue]="false">
+            No
+          </option>
+
+        </select>
+
+      </div>
+
+      <!-- Monto del adeudo. -->
+      <div
+        class="field-card"
+        *ngIf="financeReport.adeudos">
+
+        <label for="montoAdeudo">
+          Monto del adeudo
+        </label>
+
+        <input
+          id="montoAdeudo"
+          type="number"
+          min="0.01"
+          step="0.01"
+          [disabled]="reportSaved && !isEditing"
+          [(ngModel)]="financeReport.montoAdeudo" />
+
+      </div>
+</div>
+
+
+<!-- Navegación de la primera página. -->
+<div
+  class="page-actions"
+  *ngIf="capturePage === 1">
+
+  <button
+    type="button"
+    (click)="showFinancedProjectsPage()">
+
+    Página 2 →
+
+  </button>
+
+</div>
+      
+
+     <!-- Segunda página: proyectos financiados. -->
+<div
+  class="form-grid"
+  *ngIf="capturePage === 2">
+
+  <!-- Proyectos financiados. -->
+  <div class="field-card proyectos full-width">
+
+    <label for="nombreProyecto">
+      Proyectos financiados
+    </label>
+
+    <div class="project-fields">
+
+      <!-- Nombre del proyecto. -->
+      <div class="project-field">
+
+        <label for="nombreProyecto">
+          Nombre del proyecto
+        </label>
+
+        <input
+          id="nombreProyecto"
+          type="text"
+          maxlength="200"
+          [disabled]="reportSaved && !isEditing"
+          [(ngModel)]="proyectoFinanciado.strNombre" />
+
+      </div>
+
+      <!-- Origen del financiamiento. -->
+      <div class="project-field">
+
+        <label for="origenFinanciamiento">
+          Origen del financiamiento
+        </label>
+
+        <input
+          id="origenFinanciamiento"
+          type="text"
+          maxlength="200"
+          [disabled]="reportSaved && !isEditing"
+          [(ngModel)]="
+            proyectoFinanciado.strOrigenFinanciamiento
+          " />
+
+      </div>
+
+      <!-- Objetivo del proyecto. -->
+      <div class="project-field full-width">
+
+        <label for="objetivoProyecto">
+          Objetivo del proyecto
+        </label>
+
+        <textarea
+          id="objetivoProyecto"
+          rows="3"
+          maxlength="500"
+          [disabled]="reportSaved && !isEditing"
+          [(ngModel)]="proyectoFinanciado.strObjetivo">
+        </textarea>
+
+      </div>
+
+      <button
+        type="button"
+        class="btn-agregar"
+        [disabled]="reportSaved && !isEditing"
+        (click)="addProyectoFinanciado()">
+
+        Agregar proyecto
+
+      </button>
+
+    </div>
+
+    <label>
+      Proyectos financiados agregados
+    </label>
+
+    <div class="added-list">
+
+      <p
+        class="empty-hint"
+        *ngIf="
+          financeReport.proyectosFinanciados.length === 0
+        ">
+
+        Aún no has agregado ningún proyecto financiado.
+
+      </p>
+
+      <div
+        class="added-item"
+        *ngFor="
+          let proyecto
+          of financeReport.proyectosFinanciados;
+          let i = index
+        ">
+
+        <div class="project-information">
+
+          <strong>
+            {{ proyecto.strNombre }}
+          </strong>
+
+          <span>
+            Origen:
+            {{ proyecto.strOrigenFinanciamiento }}
+          </span>
+
+          <span>
+            Objetivo:
+            {{ proyecto.strObjetivo }}
+          </span>
+
+        </div>
+
+        <button
+          type="button"
+          class="btn-quitar"
+          *ngIf="!reportSaved || isEditing"
+          (click)="removeProyectoFinanciado(i)">
+
+          ✕
+
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+  </div>
+
+  <!-- Vista previa. -->
+  <div
+    *ngIf="activeView === 'preview'"
+    class="preview-page">
+
+    <div class="preview-grid">
+
+      <!-- Resumen financiero. -->
+      <div class="preview-card">
+
+        <h3>
+          Información financiera
+        </h3>
+
+        <p>
+
+          <strong>
+            Periodo:
+          </strong>
+
+          {{ periodo }}
+
+        </p>
+
+        <p>
+
+          <strong>
+            Presupuesto anual:
+          </strong>
+
+          {{
+            (financeReport.presupuestoAnual ?? 0)
+              | currency:'MXN':'symbol':'1.2-2'
+          }}
+
+        </p>
+
+        <p>
+
+          <strong>
+            Subsidio estatal:
+          </strong>
+
+          {{
+            (financeReport.subsidioEstatal ?? 0)
+              | currency:'MXN':'symbol':'1.2-2'
+          }}
+
+        </p>
+
+        <p>
+
+          <strong>
+            Subsidio federal:
+          </strong>
+
+          {{
+            (financeReport.subsidioFederal ?? 0)
+              | currency:'MXN':'symbol':'1.2-2'
+          }}
+
+        </p>
+
+        <p>
+
+          <strong>
+            Ingresos propios:
+          </strong>
+
+          {{
+            (financeReport.ingresosPropios ?? 0)
+              | currency:'MXN':'symbol':'1.2-2'
+          }}
+
+        </p>
+
+      </div>
+
+      <!-- Resumen de gastos y adeudos. -->
+      <div class="preview-card">
+
+        <h3>
+          Gastos y adeudos
+        </h3>
+
+        <p>
+
+          <strong>
+            Gasto ejercido:
+          </strong>
+
+          {{
+            (financeReport.gastoEjercido ?? 0)
+              | currency:'MXN':'symbol':'1.2-2'
+          }}
+
+        </p>
+
+        <p>
+
+          <strong>
+            Gasto por alumno:
+          </strong>
+
+          {{
+            (financeReport.gastoAlumno ?? 0)
+              | currency:'MXN':'symbol':'1.2-2'
+          }}
+
+        </p>
+
+        <p>
+
+          <strong>
+            Cuenta con adeudos:
+          </strong>
+
+          {{ financeReport.adeudos ? 'Sí' : 'No' }}
+
+        </p>
+
+        <p *ngIf="financeReport.adeudos">
+
+          <strong>
+            Monto del adeudo:
+          </strong>
+
+          {{
+            (financeReport.montoAdeudo ?? 0)
+              | currency:'MXN':'symbol':'1.2-2'
+          }}
+
+        </p>
+
+      </div>
+
+      <!-- Proyectos financiados. -->
+      <div class="preview-card full-width">
+
+        <h3>
+          Proyectos financiados
+        </h3>
+
+        <div
+          class="preview-project-list"
+          *ngIf="
+            financeReport.proyectosFinanciados.length > 0
+          ">
+
+          <div
+            class="preview-project"
+            *ngFor="
+              let proyecto
+              of financeReport.proyectosFinanciados
+            ">
+
+            <p>
+
+              <strong>
+                Nombre:
+              </strong>
+
+              {{ proyecto.strNombre }}
+
+            </p>
+
+            <p>
+
+              <strong>
+                Origen del financiamiento:
+              </strong>
+
+              {{ proyecto.strOrigenFinanciamiento }}
+
+            </p>
+
+            <p>
+
+              <strong>
+                Objetivo:
+              </strong>
+
+              {{ proyecto.strObjetivo }}
+
+            </p>
+
+          </div>
+
+        </div>
+
+        <p
+          *ngIf="
+            financeReport.proyectosFinanciados.length === 0
+          ">
+
+          No hay proyectos financiados registrados.
+
+        </p>
+
+      </div>
+
+    </div>
+
+    <!-- Gráfica del resumen financiero. -->
+    <div class="charts-grid">
+
+      <app-bar-chart
+        [title]="'Resumen financiero'"
+        [labels]="[
+          'Presupuesto anual',
+          'Subsidio estatal',
+          'Subsidio federal',
+          'Ingresos propios',
+          'Gasto ejercido',
+          'Gasto por alumno'
+        ]"
+        [series]="[
+          {
+            name: 'Monto',
+            values: [
+              financeReport.presupuestoAnual ?? 0,
+              financeReport.subsidioEstatal ?? 0,
+              financeReport.subsidioFederal ?? 0,
+              financeReport.ingresosPropios ?? 0,
+              financeReport.gastoEjercido ?? 0,
+              financeReport.gastoAlumno ?? 0
+            ]
+          }
+        ]">
+
+      </app-bar-chart>
+
+    </div>
+
+  </div>
+
+</div>
