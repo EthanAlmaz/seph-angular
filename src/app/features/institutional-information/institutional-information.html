@@ -2,22 +2,15 @@
 <div class="page">
 
   <!-- Menú lateral del módulo. -->
-  <aside
-    class="sidebar"
-    [class.sidebar-collapsed]="menuCollapsed">
+  <aside class="sidebar" [class.sidebar-collapsed]="menuCollapsed">
 
     <!-- Expande o colapsa el menú lateral. -->
-    <button
-      class="hamburger"
-      type="button"
-      (click)="toggleMenu()">
+    <button class="hamburger" type="button" (click)="toggleMenu()">
       ☰
     </button>
 
     <!-- Título del módulo. -->
-    <div
-      class="sidebar-title"
-      *ngIf="!menuCollapsed">
+    <div class="sidebar-title" *ngIf="!menuCollapsed">
 
       Registro de Información <br />
       Institucional de la DGES
@@ -25,28 +18,19 @@
     </div>
 
     <!-- Navegación de las secciones institucionales. -->
-    <nav
-      class="menu"
-      *ngIf="!menuCollapsed">
+    <nav class="menu" *ngIf="!menuCollapsed">
 
-      <a
-        class="menu-item"
-        routerLink="/home">
+      <a class="menu-item" routerLink="/home">
         Inicio
       </a>
 
-    
-      <a
-        class="menu-item"
-        routerLink="/institutional-information">
+
+      <a class="menu-item" routerLink="/institutional-information">
         Visualización de Registros
       </a>
 
       <!-- Módulo activo actualmente. -->
-      <a
-        class="menu-item"
-        [class.active]="currentStep === 1"
-        [class.completed]="enrollmentCompleted"
+      <a class="menu-item" [class.active]="currentStep === 1" [class.completed]="enrollmentCompleted"
         (click)="goToStep(1)">
 
         Datos de Matrículas
@@ -54,72 +38,54 @@
       </a>
 
       <!-- Módulo de captura de información del personal. -->
-      <a
-        class="menu-item"
-        [class.active]="currentStep === 2"
-        (click)="goToStep(2)">
+      <a class="menu-item" [class.active]="currentStep === 2" (click)="goToStep(2)">
 
-       Datos del Personal
+        Datos del Personal
 
       </a>
 
       <!-- Módulo de captura de información de infraestructura. -->
-    <button
-      type="button"
-      class="menu-item infrastructure-menu-item"
-      [class.active]="currentStep === 3"
-      [class.disabled]="!personalCompleted"
-      [disabled]="!personalCompleted"
-      (click)="goToStep(3)">
+      <button type="button" class="menu-item infrastructure-menu-item" [class.active]="currentStep === 3"
+        (click)="goToStep(3)">
 
-      Datos de Infraestructura
+        Datos de Infraestructura
 
-    </button>
+      </button>
 
-     <!-- Módulo de captura de información financiera. -->
-<button
-  type="button"
-  class="menu-item"
-  [class.active]="currentStep === 4"
-  (click)="goToStep(4)">
+      <!-- Módulo de captura de información financiera. -->
+      <button type="button" class="menu-item" [class.active]="currentStep === 4" (click)="goToStep(4)">
 
-  Datos de Finanzas
+        Datos de Finanzas
 
-</button>
+      </button>
 
-       <!-- Módulo de vinculación y resultados. -->
-<button
-  type="button"
-  class="menu-item"
-  [class.active]="currentStep === 5"
-  (click)="goToStep(5)">
+      <!-- Módulo de vinculación y resultados. -->
+      <button type="button" class="menu-item" [class.active]="currentStep === 5" (click)="goToStep(5)">
 
-  Vinculación y Resultados
+        Vinculación y Resultados
 
-</button>
+      </button>
 
-      <a class="menu-item disabled">
+      <!-- Módulo de análisis estratégico. -->
+      <button type="button" class="menu-item" [class.active]="currentStep === 6" (click)="goToStep(6)">
+
         Análisis Estratégico
-      </a>
+
+      </button>
 
     </nav>
 
   </aside>
 
   <!-- Contenido del módulo seleccionado. -->
-  <main
-    class="content"
-    [class.content-expanded]="menuCollapsed">
+  <main class="content" [class.content-expanded]="menuCollapsed">
 
     <section class="form-wrapper">
 
       <!-- Encabezado y avance del flujo institucional. -->
       <div class="top-actions">
 
-        <button
-          class="btn-nav"
-          type="button"
-          routerLink="/home">
+        <button class="btn-nav" type="button" routerLink="/home">
 
           Atrás
 
@@ -128,10 +94,8 @@
         <!-- Indicadores de avance de los módulos institucionales. -->
         <div class="steps">
 
-          <div
-            class="step"
-            [class.active]="currentStep === 1"
-            [class.completed]="enrollmentCompleted">
+          <!-- Paso 1: Matrículas. -->
+          <div class="step" [class.active]="currentStep === 1" [class.completed]="enrollmentCompleted">
 
             <span>
               {{ enrollmentCompleted ? '✓' : '1' }}
@@ -143,10 +107,8 @@
 
           </div>
 
-          <div
-            class="step"
-            [class.active]="currentStep === 2"
-            [class.completed]="personalCompleted">
+          <!-- Paso 2: Personal. -->
+          <div class="step" [class.active]="currentStep === 2" [class.completed]="personalCompleted">
 
             <span>
               {{ personalCompleted ? '✓' : '2' }}
@@ -158,36 +120,34 @@
 
           </div>
 
-                <div
-        class="step"
-        [class.active]="currentStep === 3">
+          <!-- Paso 3: Infraestructura. -->
+          <div class="step" [class.active]="currentStep === 3">
 
-        <span>
-          3
-        </span>
+            <span>
+              3
+            </span>
 
-        <p>
-          Datos de Infraestructura
-        </p>
+            <p>
+              Datos de Infraestructura
+            </p>
 
-      </div>
-      <div
-        class="step"
-        [class.active]="currentStep === 4">
+          </div>
 
-        <span>
-          4
-        </span>
+          <!-- Paso 4: Finanzas. -->
+          <div class="step" [class.active]="currentStep === 4">
 
-        <p>
-          Datos de Finanzas
-        </p>
+            <span>
+              4
+            </span>
 
-      </div>
+            <p>
+              Datos de Finanzas
+            </p>
 
-          <div
-            class="step"
-            [class.active]="currentStep === 5">
+          </div>
+
+          <!-- Paso 5: Vinculación. -->
+          <div class="step" [class.active]="currentStep === 5">
 
             <span>
               5
@@ -199,13 +159,23 @@
 
           </div>
 
+          <!-- Paso 6: Análisis Estratégico. -->
+          <div class="step" [class.active]="currentStep === 6">
+
+            <span>
+              6
+            </span>
+
+            <p>
+              Análisis Estratégico
+            </p>
+
+          </div>
+
         </div>
 
         <!-- Guarda la información de la sección activa. -->
-        <button
-          class="btn-nav"
-          type="button"
-          [disabled]="
+        <button class="btn-nav" type="button" [disabled]="
             isSaving ||
             (
               currentStep === 1 &&
@@ -231,34 +201,43 @@
               currentStep === 5 &&
               vinculationDataComponent?.reportSaved &&
               !vinculationDataComponent?.isEditing
+            )||
+            (
+            currentStep === 6 &&
+            strategicAnalysisDataComponent?.reportSaved &&
+            !strategicAnalysisDataComponent?.isEditing
             )
-          "
-          (click)="saveCurrentSection()">
+
+          " (click)="saveCurrentSection()">
 
           {{
-            isSaving
-              ? 'Guardando...'
-              : currentStep === 1 &&
-                enrollmentDataComponent?.reportSaved &&
-                enrollmentDataComponent?.isEditing
-                ? 'Guardar cambios'
-                : currentStep === 2 &&
-                  personalDataComponent?.reportSaved &&
-                  personalDataComponent?.isEditing
-                  ? 'Guardar cambios'
-                  : currentStep === 3 &&
-                  infrastructureDataComponent?.reportSaved &&
-                  infrastructureDataComponent?.isEditing
-                  ? 'Guardar cambios'
-                  : currentStep === 4 &&
-                    financeDataComponent?.reportSaved &&
-                    financeDataComponent?.isEditing
-                    ? 'Guardar cambios'
-                    : currentStep === 5 &&
-                      vinculationDataComponent?.reportSaved &&
-                      vinculationDataComponent?.isEditing
-                      ? 'Guardar cambios'
-                      : 'Guardar'
+          isSaving
+          ? 'Guardando...'
+          : currentStep === 1 &&
+          enrollmentDataComponent?.reportSaved &&
+          enrollmentDataComponent?.isEditing
+          ? 'Guardar cambios'
+          : currentStep === 2 &&
+          personalDataComponent?.reportSaved &&
+          personalDataComponent?.isEditing
+          ? 'Guardar cambios'
+          : currentStep === 3 &&
+          infrastructureDataComponent?.reportSaved &&
+          infrastructureDataComponent?.isEditing
+          ? 'Guardar cambios'
+          : currentStep === 4 &&
+          financeDataComponent?.reportSaved &&
+          financeDataComponent?.isEditing
+          ? 'Guardar cambios'
+          : currentStep === 5 &&
+          vinculationDataComponent?.reportSaved &&
+          vinculationDataComponent?.isEditing
+          ? 'Guardar cambios'
+          : currentStep === 6 &&
+          strategicAnalysisDataComponent?.reportSaved &&
+          strategicAnalysisDataComponent?.isEditing
+          ? 'Guardar cambios'
+          : 'Guardar'
           }}
 
         </button>
@@ -266,41 +245,36 @@
       </div>
 
       <!-- Avisos generados desde el componente contenedor. -->
-      <div
-        class="notification"
-        [class.success]="notificationType === 'success'"
-        [class.error]="notificationType === 'error'"
-        *ngIf="notificationMessage">
+      <div class="notification" [class.success]="notificationType === 'success'"
+        [class.error]="notificationType === 'error'" *ngIf="notificationMessage">
 
         {{ notificationMessage }}
 
       </div>
 
       <!-- Formulario del módulo de matrícula. -->
-      <app-enrollment-data
-        *ngIf="currentStep === 1">
+      <app-enrollment-data *ngIf="currentStep === 1">
       </app-enrollment-data>
 
       <!-- Formulario del módulo de personal. -->
-      <app-personal-data
-        *ngIf="currentStep === 2"
-        (personalCompletedChange)="personalCompleted = $event">
+      <app-personal-data *ngIf="currentStep === 2" (personalCompletedChange)="personalCompleted = $event">
       </app-personal-data>
 
-     <!-- Formulario del módulo de infraestructura. -->
-      <app-infrastructure-data
-        *ngIf="currentStep === 3">
+      <!-- Formulario del módulo de infraestructura. -->
+      <app-infrastructure-data *ngIf="currentStep === 3">
       </app-infrastructure-data>
 
       <!-- Formulario del módulo de finanzas. -->
-      <app-finance-data
-        *ngIf="currentStep === 4">
+      <app-finance-data *ngIf="currentStep === 4">
       </app-finance-data>
 
       <!-- Formulario del módulo de vinculación. -->
-      <app-vinculation-data
-        *ngIf="currentStep === 5">
+      <app-vinculation-data *ngIf="currentStep === 5">
       </app-vinculation-data>
+
+      <!-- Formulario del módulo de análisis estratégico. -->
+      <app-strategic-analysis-data *ngIf="currentStep === 6">
+      </app-strategic-analysis-data>
 
     </section>
 

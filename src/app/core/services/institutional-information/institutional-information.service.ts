@@ -79,6 +79,14 @@ import { CreateMapInstitucionPeriodoRequest }
 import { UpdateMapInstitucionPeriodoRequest }
   from '../../../shared/models/institutional-information/institution-period/requests/updateMapInstitucionPeriodoRequest';
 
+  import { CreateReporteAnalisisEstrategicoRequest }
+  from '../../../shared/models/institutional-information/strategic-analysis/requests/createReporteAnalisisEstrategicoRequest';
+
+import { UpdateReporteAnalisisEstrategicoRequest }
+  from '../../../shared/models/institutional-information/strategic-analysis/requests/updateReporteAnalisisEstrategicoRequest';
+
+import { ReporteAnalisisEstrategicoResponse }
+  from '../../../shared/models/institutional-information/strategic-analysis/responses/reporteAnalisisEstrategicoResponse';
 /* URL base del backend. */
 const API_URL = 'https://localhost:7160/api/v1';
 
@@ -485,6 +493,50 @@ updateMapInstitucionPeriodo(
     ApiResponse<MapInstitucionPeriodoResponse>
   >(
     `${API_URL}/MapInstitucionPeriodo/${id}`,
+    request
+  );
+}
+
+/*
+ * Obtiene el reporte de análisis estratégico
+ * registrado para un periodo institucional.
+ */
+getReporteAnalisisEstrategico(
+  idMapInstitucionPeriodo: number
+) {
+  return this.http.get<
+    ApiResponse<ReporteAnalisisEstrategicoResponse>
+  >(
+    `${API_URL}/ReporteAnalisisEstrategico/reporte/${idMapInstitucionPeriodo}`
+  );
+}
+
+/*
+ * Registra el reporte
+ * de análisis estratégico.
+ */
+createReporteAnalisisEstrategico(
+  request: CreateReporteAnalisisEstrategicoRequest
+) {
+  return this.http.post<
+    ApiResponse<ReporteAnalisisEstrategicoResponse>
+  >(
+    `${API_URL}/ReporteAnalisisEstrategico/reporte`,
+    request
+  );
+}
+
+/*
+ * Actualiza el reporte
+ * de análisis estratégico.
+ */
+updateReporteAnalisisEstrategico(
+  request: UpdateReporteAnalisisEstrategicoRequest
+) {
+  return this.http.put<
+    ApiResponse<ReporteAnalisisEstrategicoResponse>
+  >(
+    `${API_URL}/ReporteAnalisisEstrategico/reporte`,
     request
   );
 }

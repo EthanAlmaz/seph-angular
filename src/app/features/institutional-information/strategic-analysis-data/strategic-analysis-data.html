@@ -1,0 +1,285 @@
+<div class="strategic-analysis-section">
+
+  <!-- Encabezado de la sección. -->
+  <div class="section-header">
+
+    <div>
+
+      <h2>
+        Análisis Estratégico
+      </h2>
+
+      <p>
+        Capture la información correspondiente
+        al análisis estratégico institucional.
+      </p>
+
+    </div>
+
+    <!-- Cambio entre captura y vista previa. -->
+    <div class="view-actions">
+
+      <button
+        type="button"
+        class="btn-secondary"
+        [class.active]="activeView === 'capture'"
+        (click)="showCapture()">
+
+        Captura
+
+      </button>
+
+      <button
+        type="button"
+        class="btn-secondary"
+        [class.active]="activeView === 'preview'"
+        (click)="showPreview()">
+
+        Vista previa
+
+      </button>
+
+    </div>
+
+  </div>
+
+  <!-- Mensajes de guardado o error. -->
+  <div
+    class="notification"
+    [class.success]="saveMessageType === 'success'"
+    [class.error]="saveMessageType === 'error'"
+    *ngIf="saveMessage">
+
+    {{ saveMessage }}
+
+  </div>
+
+  <!-- Periodo institucional activo. -->
+  <div
+    class="period-card"
+    *ngIf="periodo">
+
+    <span>
+      Periodo activo
+    </span>
+
+    <strong>
+      {{ periodo }}
+    </strong>
+
+  </div>
+
+  <!-- Acciones disponibles cuando ya existe un reporte. -->
+  <div
+    class="edit-actions"
+    *ngIf="reportSaved">
+
+    <button
+      type="button"
+      class="btn-edit"
+      *ngIf="!isEditing"
+      (click)="enableEdit()">
+
+      Editar información
+
+    </button>
+
+    <button
+      type="button"
+      class="btn-cancel"
+      *ngIf="isEditing"
+      (click)="cancelEdit()">
+
+      Cancelar edición
+
+    </button>
+
+    <span
+      class="editing-message"
+      *ngIf="isEditing">
+
+      Editando reporte...
+
+    </span>
+
+  </div>
+
+  <!-- Indicador de carga. -->
+  <div
+    class="loading-message"
+    *ngIf="isLoading">
+
+    Cargando información...
+
+  </div>
+
+  <!-- Vista de captura. -->
+  <div
+    class="form-page"
+    *ngIf="
+      activeView === 'capture' &&
+      !isLoading
+    ">
+
+    <!-- Mensaje cuando no existen preguntas. -->
+    <div
+      class="empty-message"
+      *ngIf="respuestasAnalisis.length === 0">
+
+      No existen preguntas disponibles
+      para el análisis estratégico.
+
+    </div>
+
+    <!-- Preguntas dinámicas. -->
+    <div
+      class="questions-grid"
+      *ngIf="respuestasAnalisis.length > 0">
+
+      <div
+        class="question-card"
+        *ngFor="
+          let respuesta of respuestasAnalisis;
+          let i = index
+        ">
+
+        <!-- Número y texto de la pregunta. -->
+        <div class="question-header">
+
+          <span class="question-number">
+            {{ i + 1 }}
+          </span>
+
+          <label
+            [attr.for]="
+              'respuesta-' +
+              respuesta.idPreguntaAnalisis
+            ">
+
+            {{ respuesta.strPregunta }}
+
+          </label>
+
+        </div>
+
+        <!-- Respuesta de la institución. -->
+        <textarea
+          [id]="
+            'respuesta-' +
+            respuesta.idPreguntaAnalisis
+          "
+          rows="5"
+          placeholder="Capture su respuesta..."
+          [disabled]="
+            reportSaved &&
+            !isEditing
+          "
+          [(ngModel)]="respuesta.strRespuesta">
+        </textarea>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Vista previa. -->
+  <div
+    class="preview-page"
+    *ngIf="
+      activeView === 'preview' &&
+      !isLoading
+    ">
+
+    <div class="preview-header">
+
+      <h3>
+        Vista previa del análisis estratégico
+      </h3>
+
+      <p>
+        Revise la información capturada
+        antes de finalizar el registro.
+      </p>
+
+    </div>
+
+    <!-- Resumen del periodo. -->
+    <div class="preview-period">
+
+      <span>
+        Periodo
+      </span>
+
+      <strong>
+        {{ periodo || 'Sin periodo activo' }}
+      </strong>
+
+    </div>
+
+    <!-- Respuestas mostradas en vista previa. -->
+    <div
+      class="preview-grid"
+      *ngIf="respuestasAnalisis.length > 0">
+
+      <div
+        class="preview-card"
+        *ngFor="
+          let respuesta of respuestasAnalisis;
+          let i = index
+        ">
+
+        <div class="preview-question">
+
+          <span class="question-number">
+            {{ i + 1 }}
+          </span>
+
+          <strong>
+            {{ respuesta.strPregunta }}
+          </strong>
+
+        </div>
+
+        <div class="preview-answer">
+
+          <p
+            *ngIf="
+              respuesta.strRespuesta &&
+              respuesta.strRespuesta.trim()
+            ">
+
+            {{ respuesta.strRespuesta }}
+
+          </p>
+
+          <p
+            class="empty-answer"
+            *ngIf="
+              !respuesta.strRespuesta ||
+              !respuesta.strRespuesta.trim()
+            ">
+
+            Sin respuesta
+
+          </p>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- Mensaje cuando no existen preguntas. -->
+    <div
+      class="empty-message"
+      *ngIf="respuestasAnalisis.length === 0">
+
+      No existe información disponible
+      para mostrar en la vista previa.
+
+    </div>
+
+  </div>
+
+</div>

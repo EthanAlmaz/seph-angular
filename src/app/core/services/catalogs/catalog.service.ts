@@ -20,7 +20,8 @@ import { ChangePeriodStatusRequest } from '../../../shared/models/catalogs/reque
 
 import { TipoPeriodoResponse } from '../../../shared/models/catalogs/responses/tipoPeriodoResponse';
 
-
+import { CatPreguntaAnalisisResponse }
+  from '../../../shared/models/catalogs/responses/catPreguntaAnalisisResponse';
 
 
 @Injectable({
@@ -165,5 +166,19 @@ export class CatalogService {
       `${this.catalogosUrl}/sector-vinculado`
     );
   }
+
+  /*
+ * Obtiene las preguntas activas
+ * disponibles para el análisis estratégico.
+ */
+getPreguntasAnalisisActivas():
+  Observable<ApiResponse<CatPreguntaAnalisisResponse[]>> {
+
+  return this.http.get<
+    ApiResponse<CatPreguntaAnalisisResponse[]>
+  >(
+    `${this.apiBaseUrl}/CatPreguntaAnalisis/activas`
+  );
+}
 
 }
