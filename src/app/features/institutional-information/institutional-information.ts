@@ -1,17 +1,13 @@
-import {
-  ChangeDetectorRef,
-  Component,
-  ViewChild,
-  inject
-} from '@angular/core';
+import { ChangeDetectorRef, Component, ViewChild, inject } from '@angular/core';
 
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { EnrollmentDataComponent }from './enrollment-data/enrollment-data';
-import { PersonalDataComponent }from './personal-data/personal-data';
-import { InfrastructureDataComponent }from './infrastructure-data/infrastructure-data';
-import { VinculationDataComponent }from './vinculation-data/vinculation-data';
+import { EnrollmentDataComponent } from './enrollment-data/enrollment-data';
+import { PersonalDataComponent } from './personal-data/personal-data';
+import { InfrastructureDataComponent } from './infrastructure-data/infrastructure-data';
+import { VinculationDataComponent } from './vinculation-data/vinculation-data';
 import { FinanceDataComponent } from './finance-data/finance-data';
+import { StrategicAnalysisDataComponent } from './strategic-analysis-data/strategic-analysis-data';
 
 @Component({
   selector: 'app-institutional-information',
@@ -23,7 +19,9 @@ import { FinanceDataComponent } from './finance-data/finance-data';
     PersonalDataComponent,
     InfrastructureDataComponent,
     FinanceDataComponent,
-    VinculationDataComponent
+    VinculationDataComponent,
+    StrategicAnalysisDataComponent
+
   ],
   templateUrl: './institutional-information.html',
   styleUrl: './institutional-information.scss'
@@ -62,13 +60,21 @@ export class InstitutionalInformationComponent {
   @ViewChild(VinculationDataComponent)
   vinculationDataComponent?: VinculationDataComponent;
 
-      /*
-    * Referencia al formulario de finanzas.
-    * Permite ejecutar su método de guardado
-    * desde el botón del componente contenedor.
-    */
-    @ViewChild(FinanceDataComponent)
-    financeDataComponent?: FinanceDataComponent;
+  /*
+* Referencia al formulario de finanzas.
+* Permite ejecutar su método de guardado
+* desde el botón del componente contenedor.
+*/
+  @ViewChild(FinanceDataComponent)
+  financeDataComponent?: FinanceDataComponent;
+
+  /*
+  * Referencia al formulario de análisis estratégico.
+  * Permite ejecutar su método de guardado
+  * desde el botón del componente contenedor.
+  */
+  @ViewChild(StrategicAnalysisDataComponent)
+  strategicAnalysisDataComponent?: StrategicAnalysisDataComponent;
 
   private cdr =
     inject(ChangeDetectorRef);
@@ -151,10 +157,11 @@ export class InstitutionalInformationComponent {
 
     }
 
-    if (
-      step === 3 &&
-      this.personalCompleted
-    ) {
+    /*
+     * Infraestructura corresponde
+     * al paso 3.
+     */
+    if (step === 3) {
 
       this.currentStep = step;
 
@@ -177,6 +184,16 @@ export class InstitutionalInformationComponent {
     * Vinculación corresponde al paso 5.
     */
     if (step === 5) {
+
+      this.currentStep = step;
+
+    }
+
+    /*
+    * Análisis Estratégico corresponde
+    * al paso 6.
+    */
+    if (step === 6) {
 
       this.currentStep = step;
 
@@ -227,6 +244,21 @@ export class InstitutionalInformationComponent {
       this.saveVinculationSection();
 
     }
+    if (this.currentStep === 5) {
+
+      this.saveVinculationSection();
+
+      return;
+
+    }
+
+    if (this.currentStep === 6) {
+
+      this.saveStrategicAnalysisSection();
+
+    }
+
+
 
   }
 
@@ -274,6 +306,25 @@ export class InstitutionalInformationComponent {
         }
 
       );
+
+  }
+  /*
+  * Guarda la información del análisis estratégico
+  * utilizando el componente hijo.
+  */
+  private saveStrategicAnalysisSection(): void {
+
+    if (
+      !this.strategicAnalysisDataComponent ||
+      this.strategicAnalysisDataComponent.isSaving
+    ) {
+
+      return;
+
+    }
+
+    this.strategicAnalysisDataComponent
+      .saveStrategicAnalysisData();
 
   }
 
@@ -333,25 +384,25 @@ export class InstitutionalInformationComponent {
 
   }
 
-      /*
-    * Guarda la información financiera
-    * utilizando el componente hijo.
-    */
-    private saveFinanceSection(): void {
+  /*
+* Guarda la información financiera
+* utilizando el componente hijo.
+*/
+  private saveFinanceSection(): void {
 
-      if (
-        !this.financeDataComponent ||
-        this.financeDataComponent.isSaving
-      ) {
+    if (
+      !this.financeDataComponent ||
+      this.financeDataComponent.isSaving
+    ) {
 
-        return;
+      return;
 
-      }
+    }
 
-  this.financeDataComponent
-    .saveFinanceData();
+    this.financeDataComponent
+      .saveFinanceData();
 
-}
+  }
 
   /*
    * Guarda la información de vinculación
