@@ -56,7 +56,20 @@ import { ReporteVinculacionComparativoResponse }
 
 import { ReporteVinculacionEstadisticasResponse }
   from '../../../shared/models/institutional-information/vinculation/responses/reporteVinculacionEstadisticasResponse';
+import { CreateReporteFinanzaRequest }
+  from '../../../shared/models/institutional-information/finance/requests/createReporteFinanzaRequest';
 
+import { UpdateReporteFinanzaRequest }
+  from '../../../shared/models/institutional-information/finance/requests/updateReporteFinanzaRequest';
+
+import { ReporteFinanzaResponse }
+  from '../../../shared/models/institutional-information/finance/responses/reporteFinanzaResponse';
+
+import { ReporteFinanzaComparativoResponse }
+  from '../../../shared/models/institutional-information/finance/responses/reporteFinanzaComparativoResponse';
+
+import { ReporteFinanzaEstadisticasResponse }
+  from '../../../shared/models/institutional-information/finance/responses/reporteFinanzaEstadisticasResponse';
 import { MapInstitucionPeriodoResponse }
   from '../../../shared/models/institutional-information/institution-period/responses/mapInstitucionPeriodoResponse';
 
@@ -346,6 +359,76 @@ getReporteVinculacionEstadisticas(
     ApiResponse<ReporteVinculacionEstadisticasResponse>
   >(
     `${API_URL}/Vinculacion/estadisticas/${idMapInstitucionPeriodo}`
+  );
+}
+
+/*
+ * Obtiene el reporte financiero
+ * registrado para un periodo institucional.
+ */
+getReporteFinanza(
+  idMapInstitucionPeriodo: number
+) {
+  return this.http.get<
+    ApiResponse<ReporteFinanzaResponse>
+  >(
+    `${API_URL}/Finanza/reporte/${idMapInstitucionPeriodo}`
+  );
+}
+
+/*
+ * Registra el reporte financiero.
+ */
+createReporteFinanza(
+  request: CreateReporteFinanzaRequest
+) {
+  return this.http.post<
+    ApiResponse<ReporteFinanzaResponse>
+  >(
+    `${API_URL}/Finanza/reporte`,
+    request
+  );
+}
+
+/*
+ * Actualiza el reporte financiero.
+ */
+updateReporteFinanza(
+  request: UpdateReporteFinanzaRequest
+) {
+  return this.http.put<
+    ApiResponse<ReporteFinanzaResponse>
+  >(
+    `${API_URL}/Finanza/reporte`,
+    request
+  );
+}
+
+/*
+ * Obtiene el comparativo del reporte
+ * financiero con el periodo anterior.
+ */
+getReporteFinanzaComparativo(
+  idMapInstitucionPeriodo: number
+) {
+  return this.http.get<
+    ApiResponse<ReporteFinanzaComparativoResponse[]>
+  >(
+    `${API_URL}/Finanza/reporte-comparativo/${idMapInstitucionPeriodo}`
+  );
+}
+
+/*
+ * Obtiene las estadísticas del
+ * reporte financiero.
+ */
+getReporteFinanzaEstadisticas(
+  idMapInstitucionPeriodo: number
+) {
+  return this.http.get<
+    ApiResponse<ReporteFinanzaEstadisticasResponse>
+  >(
+    `${API_URL}/Finanza/estadisticas/${idMapInstitucionPeriodo}`
   );
 }
 

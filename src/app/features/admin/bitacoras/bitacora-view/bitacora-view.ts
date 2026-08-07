@@ -25,7 +25,9 @@ export class BitacoraViewComponent implements OnInit {
     EnlaceAcademico: 'Enlaces Académicos',
     Empleado: 'Empleados',
     Matricula: 'Matriculas',
-    Infraestructura: 'Infraestructuras'
+    Infraestructura: 'Infraestructuras',
+    Vinculacion: 'Vinculación',
+    Finanzas: 'Finanzas'
   };
 
   modulo = signal('');

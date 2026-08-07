@@ -7,18 +7,11 @@ import {
 
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
-
-import { EnrollmentDataComponent }
-  from './enrollment-data/enrollment-data';
-
-import { PersonalDataComponent }
-  from './personal-data/personal-data';
-
-import { InfrastructureDataComponent }
-  from './infrastructure-data/infrastructure-data';
-
-import { VinculationDataComponent }
-  from './vinculation-data/vinculation-data';
+import { EnrollmentDataComponent }from './enrollment-data/enrollment-data';
+import { PersonalDataComponent }from './personal-data/personal-data';
+import { InfrastructureDataComponent }from './infrastructure-data/infrastructure-data';
+import { VinculationDataComponent }from './vinculation-data/vinculation-data';
+import { FinanceDataComponent } from './finance-data/finance-data';
 
 @Component({
   selector: 'app-institutional-information',
@@ -29,6 +22,7 @@ import { VinculationDataComponent }
     EnrollmentDataComponent,
     PersonalDataComponent,
     InfrastructureDataComponent,
+    FinanceDataComponent,
     VinculationDataComponent
   ],
   templateUrl: './institutional-information.html',
@@ -67,6 +61,14 @@ export class InstitutionalInformationComponent {
    */
   @ViewChild(VinculationDataComponent)
   vinculationDataComponent?: VinculationDataComponent;
+
+      /*
+    * Referencia al formulario de finanzas.
+    * Permite ejecutar su método de guardado
+    * desde el botón del componente contenedor.
+    */
+    @ViewChild(FinanceDataComponent)
+    financeDataComponent?: FinanceDataComponent;
 
   private cdr =
     inject(ChangeDetectorRef);
@@ -161,9 +163,19 @@ export class InstitutionalInformationComponent {
     }
 
     /*
-     * El paso 4 queda reservado para Finanzas.
-     * Vinculación corresponde al paso 5.
-     */
+    * Finanzas corresponde al paso 4.
+    */
+    if (step === 4) {
+
+      this.currentStep = step;
+
+      return;
+
+    }
+
+    /*
+    * Vinculación corresponde al paso 5.
+    */
     if (step === 5) {
 
       this.currentStep = step;
@@ -197,6 +209,14 @@ export class InstitutionalInformationComponent {
     if (this.currentStep === 3) {
 
       this.saveInfrastructureSection();
+
+      return;
+
+    }
+
+    if (this.currentStep === 4) {
+
+      this.saveFinanceSection();
 
       return;
 
@@ -312,6 +332,26 @@ export class InstitutionalInformationComponent {
       .saveInfrastructureData();
 
   }
+
+      /*
+    * Guarda la información financiera
+    * utilizando el componente hijo.
+    */
+    private saveFinanceSection(): void {
+
+      if (
+        !this.financeDataComponent ||
+        this.financeDataComponent.isSaving
+      ) {
+
+        return;
+
+      }
+
+  this.financeDataComponent
+    .saveFinanceData();
+
+}
 
   /*
    * Guarda la información de vinculación

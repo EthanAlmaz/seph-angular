@@ -76,9 +76,16 @@
 
     </button>
 
-      <a class="menu-item disabled">
-        Datos de Finanzas
-      </a>
+     <!-- Módulo de captura de información financiera. -->
+<button
+  type="button"
+  class="menu-item"
+  [class.active]="currentStep === 4"
+  (click)="goToStep(4)">
+
+  Datos de Finanzas
+
+</button>
 
        <!-- Módulo de vinculación y resultados. -->
 <button
@@ -164,9 +171,19 @@
         </p>
 
       </div>
+      <div
+        class="step"
+        [class.active]="currentStep === 4">
 
-          <!-- Finanzas corresponde al paso 4,
-               pero todavía no se integra en este desarrollo. -->
+        <span>
+          4
+        </span>
+
+        <p>
+          Datos de Finanzas
+        </p>
+
+      </div>
 
           <div
             class="step"
@@ -206,6 +223,11 @@
               !infrastructureDataComponent?.isEditing
             ) ||
             (
+              currentStep === 4 &&
+              financeDataComponent?.reportSaved &&
+              !financeDataComponent?.isEditing
+            ) ||
+            (
               currentStep === 5 &&
               vinculationDataComponent?.reportSaved &&
               !vinculationDataComponent?.isEditing
@@ -225,8 +247,12 @@
                   personalDataComponent?.isEditing
                   ? 'Guardar cambios'
                   : currentStep === 3 &&
-                    infrastructureDataComponent?.reportSaved &&
-                    infrastructureDataComponent?.isEditing
+                  infrastructureDataComponent?.reportSaved &&
+                  infrastructureDataComponent?.isEditing
+                  ? 'Guardar cambios'
+                  : currentStep === 4 &&
+                    financeDataComponent?.reportSaved &&
+                    financeDataComponent?.isEditing
                     ? 'Guardar cambios'
                     : currentStep === 5 &&
                       vinculationDataComponent?.reportSaved &&
@@ -261,10 +287,15 @@
         (personalCompletedChange)="personalCompleted = $event">
       </app-personal-data>
 
-      <!-- Formulario del módulo de infraestructura. -->
+     <!-- Formulario del módulo de infraestructura. -->
       <app-infrastructure-data
         *ngIf="currentStep === 3">
       </app-infrastructure-data>
+
+      <!-- Formulario del módulo de finanzas. -->
+      <app-finance-data
+        *ngIf="currentStep === 4">
+      </app-finance-data>
 
       <!-- Formulario del módulo de vinculación. -->
       <app-vinculation-data

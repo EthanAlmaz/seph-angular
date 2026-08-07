@@ -1,0 +1,546 @@
+.finance-section {
+  margin-top: 22px;
+  padding: 18px 20px 20px;
+  border: 1px solid #333333;
+  border-radius: 12px;
+  background: #ffffff;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+  margin-bottom: 18px;
+
+  h2 {
+    margin: 0 0 4px;
+    color: #222222;
+    font-size: 16px;
+  }
+
+  p {
+    margin: 0;
+    color: #666666;
+    font-size: 11px;
+  }
+}
+
+/*
+ * Navegación entre captura
+ * y vista previa.
+ */
+.view-actions {
+  display: flex;
+  gap: 8px;
+
+  button {
+    min-width: 100px;
+    height: 30px;
+    border: 1px solid #65122e;
+    border-radius: 5px;
+    background: #ffffff;
+    color: #65122e;
+    font-size: 11px;
+    cursor: pointer;
+  }
+
+  button.active {
+    background: #65122e;
+    color: #ffffff;
+  }
+}
+
+/*
+ * Mensajes de guardado,
+ * actualización y validación.
+ */
+.notification {
+  max-width: 620px;
+  margin: 0 auto 16px;
+  padding: 9px 14px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.notification.success {
+  border: 1px solid #23b64b;
+  background: #eaf7ee;
+  color: #1f7a3a;
+}
+
+.notification.error {
+  border: 1px solid #d93025;
+  background: #fdecec;
+  color: #9b1c1c;
+}
+
+/*
+ * Contenedor general de los campos
+ * del reporte financiero.
+ */
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: start;
+  gap: 18px 16px;
+  padding: 24px;
+  border: 1px solid #d5d5d5;
+  border-radius: 10px;
+  background: #ffffff;
+  box-shadow: 0 3px 4px rgba(0, 0, 0, 0.18);
+}
+
+/*
+ * Contenedor individual
+ * de cada campo del formulario.
+ */
+.field-card {
+  min-width: 0;
+
+  label {
+    display: block;
+    margin: 0 0 5px;
+    color: #222222;
+    font-size: 11px;
+  }
+
+  input,
+  select,
+  textarea {
+    width: 100%;
+    min-height: 36px;
+    padding: 0 12px;
+    border: 1px solid #d5d5d5;
+    border-radius: 5px;
+    background: #ffffff;
+    box-sizing: border-box;
+    color: #222222;
+    font-family: inherit;
+    font-size: 12px;
+    outline: none;
+  }
+
+  input:focus,
+  select:focus,
+  textarea:focus {
+    border-color: #65122e;
+  }
+
+  textarea {
+    min-height: 80px;
+    padding-top: 10px;
+    resize: vertical;
+  }
+
+  input:disabled,
+  select:disabled,
+  textarea:disabled {
+    border-color: #dedede;
+    background: #eeeeee;
+    color: #666666;
+    cursor: not-allowed;
+    opacity: 1;
+  }
+
+  input[readonly] {
+    border-color: #dedede;
+    background: #eeeeee;
+    color: #666666;
+    cursor: default;
+    opacity: 1;
+  }
+}
+
+/*
+ * Permite que un elemento ocupe
+ * todas las columnas disponibles.
+ */
+.full-width {
+  grid-column: 1 / -1;
+}
+
+/*
+ * Contenedor de la captura
+ * de proyectos financiados.
+ */
+.project-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: end;
+  gap: 14px 16px;
+  margin-bottom: 16px;
+  padding: 16px;
+  border: 1px solid #d5d5d5;
+  border-radius: 7px;
+  background: #f7f7f7;
+}
+
+/*
+ * Contenedor individual de los
+ * campos de un proyecto financiado.
+ */
+.project-field {
+  min-width: 0;
+
+  label {
+    display: block;
+    margin: 0 0 5px;
+    color: #222222;
+    font-size: 11px;
+  }
+}
+
+/*
+ * Botón utilizado para agregar
+ * un proyecto financiado.
+ */
+.btn-agregar {
+  min-width: 130px;
+  height: 36px;
+  padding: 0 12px;
+  border: none;
+  border-radius: 5px;
+  background: #65122e;
+  color: #ffffff;
+  font-size: 11px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.btn-agregar:disabled {
+  background: #cccccc;
+  cursor: not-allowed;
+}
+
+/*
+ * Contenedor de los proyectos
+ * agregados al reporte.
+ */
+.added-list {
+  max-height: 240px;
+  padding: 8px;
+  border: 1px solid #d5d5d5;
+  border-radius: 7px;
+  background: #f7f7f7;
+  overflow-y: auto;
+  box-sizing: border-box;
+}
+
+/*
+ * Elemento individual dentro
+ * de la lista de proyectos.
+ */
+.added-item {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 8px;
+  padding: 10px;
+  border: 1px solid #d5d5d5;
+  border-radius: 6px;
+  background: #ffffff;
+  color: #333333;
+  font-size: 11px;
+}
+
+.added-item:last-child {
+  margin-bottom: 0;
+}
+
+/*
+ * Información mostrada para
+ * cada proyecto agregado.
+ */
+.project-information {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  flex-direction: column;
+  gap: 5px;
+
+  strong {
+    color: #65122e;
+    font-size: 12px;
+  }
+
+  span {
+    color: #555555;
+    line-height: 1.4;
+    overflow-wrap: anywhere;
+  }
+}
+
+/*
+ * Mensaje mostrado cuando todavía
+ * no se ha agregado ningún proyecto.
+ */
+.empty-hint {
+  margin: 0;
+  padding: 4px;
+  color: #777777;
+  font-size: 11px;
+}
+
+/*
+ * Botón utilizado para quitar
+ * un proyecto de la lista.
+ */
+.btn-quitar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 22px;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: none;
+  border-radius: 4px;
+  background: #fdecec;
+  color: #9b1c1c;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+/*
+ * Acciones para modificar
+ * un reporte guardado.
+ */
+.edit-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.btn-edit,
+.btn-cancel {
+  min-width: 130px;
+  height: 30px;
+  border-radius: 5px;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.btn-edit {
+  border: none;
+  background: #65122e;
+  color: #ffffff;
+}
+
+.btn-cancel {
+  border: 1px solid #65122e;
+  background: #ffffff;
+  color: #65122e;
+}
+
+.editing-message {
+  color: #666666;
+  font-size: 11px;
+}
+
+/*
+ * Vista previa del
+ * reporte financiero.
+ */
+.preview-page {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.preview-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.preview-card {
+  min-height: 150px;
+  padding: 16px;
+  border: 1px solid #dddddd;
+  border-radius: 10px;
+  background: #ffffff;
+
+  h3 {
+    margin: 0 0 12px;
+    color: #65122e;
+    font-size: 14px;
+  }
+
+  p {
+    margin: 7px 0;
+    color: #444444;
+    font-size: 12px;
+  }
+}
+
+/*
+ * Lista de proyectos mostrada
+ * dentro de la vista previa.
+ */
+.preview-project-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+/*
+ * Proyecto individual mostrado
+ * dentro de la vista previa.
+ */
+.preview-project {
+  padding: 12px;
+  border: 1px solid #dddddd;
+  border-radius: 7px;
+  background: #f7f7f7;
+
+  p {
+    line-height: 1.4;
+    overflow-wrap: anywhere;
+  }
+}
+
+/*
+ * Distribución de la gráfica
+ * del resumen financiero.
+ */
+.charts-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 24px;
+  margin-top: 12px;
+  align-items: stretch;
+}
+
+/*
+ * La gráfica financiera mantiene
+ * un tamaño compacto y proporcional.
+ */
+.charts-grid app-bar-chart {
+  display: block;
+  width: 80%;
+  min-width: 0;
+  justify-self: center;
+}
+
+/*
+ * Ajusta la altura interna
+ * de la gráfica financiera.
+ */
+:host ::ng-deep .charts-grid .chart-card {
+  min-height: 280px;
+  padding: 14px;
+}
+
+:host ::ng-deep .charts-grid .chart {
+  height: 250px;
+}
+
+/*
+ * Navegación entre las páginas internas
+ * del formulario de finanzas.
+ */
+.page-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 16px;
+
+  button {
+    min-width: 130px;
+    height: 36px;
+    padding: 0 16px;
+    border: none;
+    border-radius: 5px;
+    background: #b48664;
+    color: #ffffff;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  button:disabled {
+    background: #cccccc;
+    cursor: not-allowed;
+  }
+}
+
+.page-actions.split {
+  justify-content: space-between;
+}
+
+@media (max-width: 900px) {
+
+  .form-grid,
+  .preview-grid,
+  .project-fields,
+  .preview-project-list {
+    grid-template-columns: 1fr;
+  }
+
+  .section-header {
+    flex-direction: column;
+  }
+
+  .full-width {
+    grid-column: auto;
+  }
+
+  .charts-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .charts-grid app-bar-chart {
+    width: 100%;
+  }
+
+}
+
+@media (max-width: 520px) {
+
+  .finance-section {
+    padding: 16px;
+  }
+
+  .form-grid {
+    padding: 16px;
+  }
+
+  .view-actions {
+    width: 100%;
+
+    button {
+      flex: 1;
+    }
+  }
+
+  .project-fields {
+    padding: 12px;
+  }
+
+  .btn-agregar {
+    width: 100%;
+  }
+
+  .added-item {
+    align-items: flex-start;
+  }
+
+  .edit-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .btn-edit,
+  .btn-cancel {
+    width: 100%;
+  }
+
+
+  
+
+}
