@@ -1,0 +1,118 @@
+<div class="create-page">
+
+  <!-- Encabezado del formulario. -->
+  <div class="create-header">
+
+    <div class="create-title">
+
+      <h2>
+        {{
+          preguntaId
+            ? 'Editar Pregunta'
+            : 'Registrar Pregunta'
+        }}
+      </h2>
+
+      <p>
+        {{
+          preguntaId
+            ? 'Actualiza el texto de la pregunta seleccionada'
+            : 'Alta de una nueva pregunta de análisis estratégico'
+        }}
+      </p>
+
+    </div>
+
+    <a
+      class="btn-secondary"
+      routerLink="/admin/strategic-analysis-questions">
+
+      Volver al concentrado
+
+    </a>
+
+  </div>
+
+  <!-- Notificación visual de éxito o error. -->
+  @if (notificationMessage()) {
+
+    <div
+      class="notification"
+      [class.success]="notificationType() === 'success'"
+      [class.error]="notificationType() === 'error'">
+
+      {{ notificationMessage() }}
+
+    </div>
+
+  }
+
+  <!-- Estado de carga cuando se edita una pregunta. -->
+  @if (isLoading()) {
+
+    <p class="loading">
+      Cargando información de la pregunta...
+    </p>
+
+  } @else {
+
+    <!-- Formulario de alta y edición. -->
+    <form
+      class="form-card"
+      (ngSubmit)="savePregunta()">
+
+      <div class="form-grid">
+
+        <div class="field-card">
+
+          <label for="strPregunta">
+            Pregunta *
+          </label>
+
+          <textarea
+            id="strPregunta"
+            name="strPregunta"
+            rows="6"
+            maxlength="300"
+            placeholder="Capture la pregunta que se mostrará a las instituciones..."
+            [(ngModel)]="pregunta.strPregunta">
+          </textarea>
+
+          <div class="field-info">
+
+            <span>
+              Máximo 300 caracteres
+            </span>
+
+            <span>
+              {{ pregunta.strPregunta.length }}/300
+            </span>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <button
+        class="btn-primary"
+        type="submit"
+        [disabled]="isSaving()">
+
+        {{
+          isSaving()
+            ? 'Guardando...'
+            : (
+                preguntaId
+                  ? 'Guardar Cambios'
+                  : 'Registrar Pregunta'
+              )
+        }}
+
+      </button>
+
+    </form>
+
+  }
+
+</div>

@@ -1,0 +1,296 @@
+<!--
+  Concentrado de preguntas de análisis estratégico.
+  Permite consultar y administrar las preguntas registradas.
+-->
+<div class="summary-page">
+
+  <!-- Encabezado del módulo y acciones principales. -->
+  <div class="summary-header">
+
+    <div class="summary-title">
+
+      <h2>
+        Catálogo de Preguntas de Análisis Estratégico
+      </h2>
+
+      <p>
+        Administración de las preguntas disponibles
+        para las instituciones
+      </p>
+
+    </div>
+
+    <div class="summary-actions">
+
+      <a
+        class="btn-secondary"
+        routerLink="/admin">
+        Inicio
+      </a>
+
+      <a
+        class="btn-primary"
+        routerLink="/admin/strategic-analysis-questions/nueva">
+        + Nueva Pregunta
+      </a>
+
+    </div>
+
+  </div>
+
+  <!-- Notificación visual de éxito o error. -->
+  @if (notificationMessage()) {
+
+    <div
+      class="notification"
+      [class.success]="notificationType() === 'success'"
+      [class.error]="notificationType() === 'error'">
+
+      {{ notificationMessage() }}
+
+    </div>
+
+  }
+
+  <!-- Estado de carga. -->
+  @if (isLoading()) {
+
+    <p class="loading">
+      Cargando preguntas...
+    </p>
+
+  }
+
+  <!-- Mensaje cuando todavía no existen registros. -->
+  @if (
+    !isLoading() &&
+    registros().length === 0
+  ) {
+
+    <div class="empty-state">
+
+      <p>
+        Aún no hay preguntas registradas.
+      </p>
+
+    </div>
+
+  }
+
+  <!-- Tabla del concentrado. -->
+  @if (
+    !isLoading() &&
+    registros().length > 0
+  ) {
+
+    <div class="table-card">
+
+      <table class="records-table">
+
+        <thead>
+
+          <tr>
+            <th>Orden</th>
+            <th>Pregunta</th>
+            <th>Fecha de registro</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+
+        </thead>
+
+        <tbody>
+
+          @for (
+            registro of registros();
+            track registro.id
+          ) {
+
+            <tr>
+
+              <td>
+                {{ registro.intOrden }}
+              </td>
+
+              <td class="question-cell">
+                {{ registro.strPregunta }}
+              </td>
+
+              <td>
+                {{
+                  registro.dateTimeFechaRegistro
+                    | date: 'dd/MM/yyyy'
+                }}
+              </td>
+
+              <td>
+
+                <span
+                  class="badge"
+                  [class.badge-complete]="registro.bitActivo"
+                  [class.badge-incomplete]="!registro.bitActivo">
+
+                  {{
+                    registro.bitActivo
+                      ? 'Activa'
+                      : 'Inactiva'
+                  }}
+
+                </span>
+
+              </td>
+
+              <td class="actions-cell">
+
+                <button
+                  type="button"
+                  class="btn-detalle"
+                  (click)="openDetalle(registro)">
+                  Detalle
+                </button>
+
+                <a
+                  class="btn-editar"
+                  [routerLink]="[
+                    '/admin/strategic-analysis-questions',
+                    registro.id,
+                    'editar'
+                  ]">
+                  Editar
+                </a>
+
+                @if (registro.bitActivo) {
+
+                  <button
+                    type="button"
+                    class="btn-desactivar"
+                    (click)="desactivar(registro)">
+                    Desactivar
+                  </button>
+
+                } @else {
+
+                  <button
+                    type="button"
+                    class="btn-reactivar"
+                    (click)="reactivar(registro)">
+                    Reactivar
+                  </button>
+
+                }
+
+              </td>
+
+            </tr>
+
+          }
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+  }
+
+  <!-- Modal de detalle de la pregunta seleccionada. -->
+  @if (selectedRegistro(); as registro) {
+
+    <div
+      class="modal-overlay"
+      (click)="closeDetalle()">
+
+      <div
+        class="modal-card"
+        (click)="$event.stopPropagation()">
+
+        <div class="modal-header">
+
+          <h3>
+            Detalle de la pregunta
+          </h3>
+
+          <button
+            type="button"
+            class="btn-close"
+            (click)="closeDetalle()">
+            ✕
+          </button>
+
+        </div>
+
+        <div class="modal-body">
+
+          <div class="detail-row">
+
+            <span class="detail-label">
+              Orden
+            </span>
+
+            <span class="detail-value">
+              {{ registro.intOrden }}
+            </span>
+
+          </div>
+
+          <div class="detail-row">
+
+            <span class="detail-label">
+              Pregunta
+            </span>
+
+            <span class="detail-value">
+              {{ registro.strPregunta }}
+            </span>
+
+          </div>
+
+          <div class="detail-row">
+
+            <span class="detail-label">
+              Fecha de registro
+            </span>
+
+            <span class="detail-value">
+              {{
+                registro.dateTimeFechaRegistro
+                  | date: 'dd/MM/yyyy'
+              }}
+            </span>
+
+          </div>
+
+          <div class="detail-row">
+
+            <span class="detail-label">
+              Estado
+            </span>
+
+            <span class="detail-value">
+
+              <span
+                class="badge"
+                [class.badge-complete]="registro.bitActivo"
+                [class.badge-incomplete]="!registro.bitActivo">
+
+                {{
+                  registro.bitActivo
+                    ? 'Activa'
+                    : 'Inactiva'
+                }}
+
+              </span>
+
+            </span>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  }
+
+</div>
