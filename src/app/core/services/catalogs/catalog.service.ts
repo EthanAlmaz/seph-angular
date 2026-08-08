@@ -13,7 +13,11 @@ import { DiscapacitadoResponse } from '../../../shared/models/catalogs/responses
 import { PeriodResponse } from '../../../shared/models/catalogs/responses/periodResponse';
 import { MecanismoResponse }from '../../../shared/models/catalogs/responses/mecanismoResponse';
 import { SectorVinculadoResponse }from '../../../shared/models/catalogs/responses/sectorVinculadoResponse';
+import { TipoPatenteResponse }
+  from '../../../shared/models/catalogs/responses/tipoPatenteResponse';
 
+import { EstatusPatenteResponse }
+  from '../../../shared/models/catalogs/responses/estatusPatenteResponse';
 import { CreatePeriodRequest } from '../../../shared/models/catalogs/requests/createPeriodRequest';
 import { UpdatePeriodRequest } from '../../../shared/models/catalogs/requests/updatePeriodRequest';
 import { ChangePeriodStatusRequest } from '../../../shared/models/catalogs/requests/changePeriodStatusRequest';
@@ -166,6 +170,35 @@ export class CatalogService {
       `${this.catalogosUrl}/sector-vinculado`
     );
   }
+
+  /*
+ * Obtiene el catálogo de
+ * tipos de patente.
+ */
+getTiposPatente():
+Observable<ApiResponse<TipoPatenteResponse[]>> {
+
+  return this.http.get<
+    ApiResponse<TipoPatenteResponse[]>
+  >(
+    `${this.catalogosUrl}/tipo-patente`
+  );
+}
+
+/*
+ * Obtiene el catálogo de
+ * estatus de patente.
+ */
+getEstatusPatente():
+Observable<ApiResponse<EstatusPatenteResponse[]>> {
+
+  return this.http.get<
+    ApiResponse<EstatusPatenteResponse[]>
+  >(
+    `${this.catalogosUrl}/estatus-patente`
+  );
+}
+  
 
   /*
  * Obtiene las preguntas activas

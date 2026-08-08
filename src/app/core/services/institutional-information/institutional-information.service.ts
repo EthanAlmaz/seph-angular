@@ -56,6 +56,20 @@ import { ReporteVinculacionComparativoResponse }
 
 import { ReporteVinculacionEstadisticasResponse }
   from '../../../shared/models/institutional-information/vinculation/responses/reporteVinculacionEstadisticasResponse';
+  import { CreateReportePatenteRequest }
+  from '../../../shared/models/institutional-information/patent/requests/createReportePatenteRequest';
+
+import { UpdateReportePatenteRequest }
+  from '../../../shared/models/institutional-information/patent/requests/updateReportePatenteRequest';
+
+import { ReportePatenteResponse }
+  from '../../../shared/models/institutional-information/patent/responses/reportePatenteResponse';
+
+import { ReportePatenteComparativoResponse }
+  from '../../../shared/models/institutional-information/patent/responses/reportePatenteComparativoResponse';
+
+import { ReportePatenteEstadisticasResponse }
+  from '../../../shared/models/institutional-information/patent/responses/reportePatenteEstadisticasResponse';
 import { CreateReporteFinanzaRequest }
   from '../../../shared/models/institutional-information/finance/requests/createReporteFinanzaRequest';
 
@@ -101,6 +115,90 @@ export class InstitutionalInformationService {
 
   // Cliente HTTP utilizado para las peticiones al backend.
   private http = inject(HttpClient);
+
+  /*
+ * Obtiene una patente
+ * mediante su identificador.
+ */
+getReportePatente(
+  id: number
+) {
+  return this.http.get<
+    ApiResponse<ReportePatenteResponse>
+  >(
+    `${API_URL}/Patente/reporte/${id}`
+  );
+}
+
+/*
+ * Obtiene las patentes registradas
+ * durante un periodo institucional.
+ */
+getReportesPatenteByPeriodo(
+  idMapInstitucionPeriodo: number
+) {
+  return this.http.get<
+    ApiResponse<ReportePatenteResponse[]>
+  >(
+    `${API_URL}/Patente/reportes-periodo/${idMapInstitucionPeriodo}`
+  );
+}
+
+/*
+ * Registra un reporte de patente.
+ */
+createReportePatente(
+  request: CreateReportePatenteRequest
+) {
+  return this.http.post<
+    ApiResponse<ReportePatenteResponse>
+  >(
+    `${API_URL}/Patente/reporte`,
+    request
+  );
+}
+
+/*
+ * Actualiza un reporte de patente.
+ */
+updateReportePatente(
+  request: UpdateReportePatenteRequest
+) {
+  return this.http.put<
+    ApiResponse<ReportePatenteResponse>
+  >(
+    `${API_URL}/Patente/reporte`,
+    request
+  );
+}
+
+/*
+ * Obtiene el comparativo del total
+ * de patentes con el periodo anterior.
+ */
+getReportePatenteComparativo(
+  idMapInstitucionPeriodo: number
+) {
+  return this.http.get<
+    ApiResponse<ReportePatenteComparativoResponse>
+  >(
+    `${API_URL}/Patente/reporte-comparativo/${idMapInstitucionPeriodo}`
+  );
+}
+
+/*
+ * Obtiene las estadísticas
+ * del reporte de patentes.
+ */
+getReportePatenteEstadisticas(
+  idMapInstitucionPeriodo: number
+) {
+  return this.http.get<
+    ApiResponse<ReportePatenteEstadisticasResponse>
+  >(
+    `${API_URL}/Patente/estadisticas/${idMapInstitucionPeriodo}`
+  );
+}
 
   /*
    * Obtiene el comparativo del reporte de matrícula

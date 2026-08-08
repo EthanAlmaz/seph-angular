@@ -1,0 +1,607 @@
+.patent-section {
+  margin-top: 22px;
+  padding: 18px 20px 20px;
+
+  border: 1px solid #333333;
+  border-radius: 12px;
+  background: #ffffff;
+
+  box-sizing: border-box;
+}
+
+/*
+ * Encabezado principal de la sección
+ * y encabezados de las vistas.
+ */
+.section-header,
+.form-header,
+.list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+
+  margin-bottom: 18px;
+
+  h2,
+  h3 {
+    margin: 0 0 4px;
+    color: #222222;
+  }
+
+  h2 {
+    font-size: 16px;
+  }
+
+  h3 {
+    font-size: 15px;
+  }
+
+  p {
+    margin: 0;
+
+    color: #666666;
+    font-size: 11px;
+    line-height: 1.5;
+  }
+}
+
+/*
+ * Navegación entre captura
+ * y vista previa.
+ */
+.view-actions {
+  display: flex;
+  gap: 8px;
+
+  button {
+    min-width: 100px;
+    height: 30px;
+    padding: 0 14px;
+
+    border: 1px solid #65122e;
+    border-radius: 5px;
+    background: #ffffff;
+
+    color: #65122e;
+    font-size: 11px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition:
+      background-color 0.2s ease,
+      color 0.2s ease;
+
+    &.active {
+      background: #65122e;
+      color: #ffffff;
+    }
+
+    &:hover:not(:disabled) {
+      background: #65122e;
+      color: #ffffff;
+    }
+
+    &:disabled {
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+  }
+}
+
+/*
+ * Mensajes de resultado
+ * mostrados dentro de la sección.
+ */
+.notification {
+  margin-bottom: 16px;
+  padding: 10px 12px;
+
+  border: 1px solid transparent;
+  border-radius: 6px;
+
+  font-size: 11px;
+  line-height: 1.5;
+
+  &.success {
+    border-color: #b7dfc4;
+    background: #edf8f0;
+    color: #236537;
+  }
+
+  &.error {
+    border-color: #e5b9b9;
+    background: #fff1f1;
+    color: #9f2424;
+  }
+}
+/*
+ * Botones principales utilizados
+ * en las diferentes vistas.
+ */
+.btn-primary,
+.btn-secondary,
+.btn-edit,
+.btn-remove {
+  min-width: 92px;
+  height: 32px;
+  padding: 0 14px;
+
+  border-radius: 5px;
+
+  font-size: 11px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+}
+
+.btn-primary {
+  border: 1px solid #65122e;
+  background: #65122e;
+  color: #ffffff;
+
+  &:hover:not(:disabled) {
+    background: #4f0e24;
+    border-color: #4f0e24;
+  }
+}
+
+.btn-secondary {
+  border: 1px solid #65122e;
+  background: #ffffff;
+  color: #65122e;
+
+  &:hover:not(:disabled) {
+    background: #f8edf1;
+  }
+}
+
+.btn-edit {
+  min-width: 70px;
+  height: 28px;
+  padding: 0 12px;
+
+  border: 1px solid #65122e;
+  background: #ffffff;
+  color: #65122e;
+
+  &:hover:not(:disabled) {
+    background: #65122e;
+    color: #ffffff;
+  }
+}
+
+.btn-remove {
+  min-width: 70px;
+  height: 28px;
+  padding: 0 12px;
+
+  border: 1px solid #b33a3a;
+  background: #ffffff;
+  color: #b33a3a;
+
+  &:hover:not(:disabled) {
+    background: #b33a3a;
+    color: #ffffff;
+  }
+}
+
+/*
+ * Contenedor del listado
+ * de patentes registradas.
+ */
+.patent-list {
+  padding: 16px;
+
+  border: 1px solid #dddddd;
+  border-radius: 10px;
+  background: #ffffff;
+}
+
+.table-container {
+  width: 100%;
+  overflow-x: auto;
+}
+
+/*
+ * Tabla principal de patentes.
+ */
+.patent-table {
+  width: 100%;
+
+  border-collapse: collapse;
+
+  th,
+  td {
+    padding: 11px 12px;
+
+    border-bottom: 1px solid #e4e4e4;
+
+    text-align: left;
+    vertical-align: middle;
+  }
+
+  th {
+    background: #f6f6f6;
+
+    color: #333333;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+
+  td {
+    color: #444444;
+    font-size: 11px;
+    line-height: 1.4;
+  }
+
+  tbody tr {
+    transition: background-color 0.2s ease;
+
+    &:hover {
+      background: #faf7f8;
+    }
+
+    &:last-child td {
+      border-bottom: 0;
+    }
+  }
+}
+
+/*
+ * Mensajes utilizados cuando no existen
+ * registros o durante una consulta.
+ */
+.empty-state {
+  padding: 28px 16px;
+
+  border: 1px dashed #cccccc;
+  border-radius: 8px;
+  background: #fafafa;
+
+  color: #777777;
+  font-size: 11px;
+  text-align: center;
+
+  &.small {
+    padding: 16px;
+  }
+}
+
+/*
+ * Contenedores de captura
+ * y vista previa.
+ */
+.form-page,
+.preview-page {
+  padding: 16px;
+
+  border: 1px solid #dddddd;
+  border-radius: 10px;
+  background: #ffffff;
+}
+
+/*
+ * Distribución de los campos
+ * generales de la patente.
+ */
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px 18px;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  min-width: 0;
+
+  &.full-width {
+    grid-column: 1 / -1;
+  }
+
+  label {
+    color: #333333;
+    font-size: 11px;
+    font-weight: 600;
+  }
+
+  input,
+  select {
+    width: 100%;
+    height: 34px;
+    padding: 0 10px;
+
+    border: 1px solid #cccccc;
+    border-radius: 5px;
+    background: #ffffff;
+
+    color: #333333;
+    font-family: inherit;
+    font-size: 11px;
+
+    box-sizing: border-box;
+
+    outline: none;
+
+    transition:
+      border-color 0.2s ease,
+      box-shadow 0.2s ease;
+
+    &:focus {
+      border-color: #65122e;
+      box-shadow: 0 0 0 2px rgba(101, 18, 46, 0.1);
+    }
+
+    &:disabled {
+      cursor: not-allowed;
+      background: #f2f2f2;
+      color: #777777;
+    }
+  }
+
+  select {
+    cursor: pointer;
+  }
+
+  small {
+    color: #777777;
+    font-size: 10px;
+    line-height: 1.4;
+  }
+}
+
+/*
+ * Acciones inferiores utilizadas
+ * en captura y vista previa.
+ */
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 10px;
+
+  margin-top: 20px;
+  padding-top: 16px;
+
+  border-top: 1px solid #e4e4e4;
+}
+
+/*
+ * Sección utilizada para registrar
+ * los inventores de la patente.
+ */
+.inventors-section {
+  margin-top: 20px;
+  padding: 16px;
+
+  border: 1px solid #dddddd;
+  border-radius: 8px;
+  background: #fafafa;
+}
+
+/*
+ * Encabezado de la sección
+ * de inventores.
+ */
+.subsection-header {
+  margin-bottom: 14px;
+
+  h4 {
+    margin: 0 0 4px;
+
+    color: #333333;
+    font-size: 13px;
+  }
+
+  p {
+    margin: 0;
+
+    color: #777777;
+    font-size: 10px;
+    line-height: 1.5;
+  }
+}
+
+/*
+ * Campo y botón utilizados
+ * para agregar un inventor.
+ */
+.inventor-input {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 10px;
+
+  margin-bottom: 14px;
+
+  .btn-secondary {
+    height: 34px;
+  }
+}
+
+/*
+ * Listado de inventores
+ * agregados a la patente.
+ */
+.inventors-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/*
+ * Representa un inventor
+ * dentro del listado.
+ */
+.inventor-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 14px;
+
+  min-height: 40px;
+  padding: 7px 10px;
+
+  border: 1px solid #dddddd;
+  border-radius: 6px;
+  background: #ffffff;
+
+  box-sizing: border-box;
+
+  span {
+    min-width: 0;
+
+    color: #444444;
+    font-size: 11px;
+    line-height: 1.4;
+
+    overflow-wrap: anywhere;
+  }
+
+  &.preview {
+    justify-content: flex-start;
+  }
+}
+/*
+ * Distribución de las tarjetas
+ * de la vista previa.
+ */
+.preview-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+/*
+ * Tarjeta utilizada para mostrar
+ * un dato de la patente.
+ */
+.preview-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  min-height: 70px;
+  padding: 12px 14px;
+
+  border: 1px solid #dddddd;
+  border-radius: 8px;
+  background: #fafafa;
+
+  box-sizing: border-box;
+
+  &.full-width {
+    grid-column: 1 / -1;
+  }
+
+  span {
+    color: #777777;
+    font-size: 10px;
+  }
+
+  strong {
+    color: #333333;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.5;
+
+    overflow-wrap: anywhere;
+  }
+}
+
+/*
+ * Sección de inventores mostrada
+ * dentro de la vista previa.
+ */
+.preview-inventors {
+  margin-top: 20px;
+  padding: 16px;
+
+  border: 1px solid #dddddd;
+  border-radius: 8px;
+  background: #fafafa;
+
+  h4 {
+    margin: 0 0 12px;
+
+    color: #333333;
+    font-size: 13px;
+  }
+}
+
+/*
+ * Ajustes para pantallas
+ * de tamaño reducido.
+ */
+@media (max-width: 768px) {
+
+  .patent-section {
+    padding: 16px;
+  }
+
+  .section-header,
+  .form-header,
+  .list-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .section-header .btn-primary {
+    width: 100%;
+  }
+
+  .view-actions {
+    width: 100%;
+
+    button {
+      flex: 1;
+      min-width: 0;
+    }
+  }
+
+  .form-grid,
+  .preview-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .form-field.full-width,
+  .preview-card.full-width {
+    grid-column: auto;
+  }
+
+  .inventor-input {
+    grid-template-columns: 1fr;
+
+    .btn-secondary {
+      width: 100%;
+    }
+  }
+
+  .form-actions {
+    flex-direction: column-reverse;
+    align-items: stretch;
+
+    button {
+      width: 100%;
+    }
+  }
+
+  .patent-table {
+    min-width: 760px;
+  }
+}

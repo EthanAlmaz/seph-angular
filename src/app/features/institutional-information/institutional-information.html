@@ -73,6 +73,13 @@
 
       </button>
 
+        <!-- Módulo de registro de patentes. -->
+      <button type="button" class="menu-item" [class.active]="currentStep === 7" (click)="goToStep(7)">
+
+        Registro de Patentes
+
+      </button>
+
     </nav>
 
   </aside>
@@ -172,10 +179,29 @@
 
           </div>
 
+          <!-- Paso 7: Registro de Patentes. -->
+          <div
+            class="step"
+            [class.active]="currentStep === 7">
+
+            <span>
+              7
+            </span>
+
+            <p>
+              Registro de Patentes
+            </p>
+
+          </div>
+
         </div>
 
         <!-- Guarda la información de la sección activa. -->
-        <button class="btn-nav" type="button" [disabled]="
+                <button
+          *ngIf="currentStep !== 7"
+          class="btn-nav"
+          type="button"
+          [disabled]="
             isSaving ||
             (
               currentStep === 1 &&
@@ -275,6 +301,10 @@
       <!-- Formulario del módulo de análisis estratégico. -->
       <app-strategic-analysis-data *ngIf="currentStep === 6">
       </app-strategic-analysis-data>
+
+      <!-- Formulario y listado del módulo de patentes. -->
+      <app-patent-data *ngIf="currentStep === 7">
+      </app-patent-data>
 
     </section>
 
