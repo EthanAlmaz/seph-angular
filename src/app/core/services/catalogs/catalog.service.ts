@@ -27,6 +27,15 @@ import { TipoPeriodoResponse } from '../../../shared/models/catalogs/responses/t
 import { CatPreguntaAnalisisResponse }
   from '../../../shared/models/catalogs/responses/catPreguntaAnalisisResponse';
 
+  import { CreateCatPreguntaAnalisisRequest }
+  from '../../../shared/models/catalogs/requests/createCatPreguntaAnalisisRequest';
+
+import { UpdateCatPreguntaAnalisisRequest }
+  from '../../../shared/models/catalogs/requests/updateCatPreguntaAnalisisRequest';
+
+import { ChangeStatusCatPreguntaAnalisisRequest }
+  from '../../../shared/models/catalogs/requests/changeStatusCatPreguntaAnalisisRequest';
+
 
 @Injectable({
   providedIn: 'root'
@@ -212,6 +221,74 @@ getPreguntasAnalisisActivas():
   >(
     `${this.apiBaseUrl}/CatPreguntaAnalisis/activas`
   );
+}
+
+/*
+ * Obtiene todas las preguntas registradas
+ * para la administración del catálogo.
+ */
+getPreguntasAnalisis():
+  Observable<ApiResponse<CatPreguntaAnalisisResponse[]>> {
+
+  return this.http.get<
+    ApiResponse<CatPreguntaAnalisisResponse[]>
+  >(
+    `${this.apiBaseUrl}/CatPreguntaAnalisis`
+  );
+
+}
+
+/*
+ * Registra una nueva pregunta
+ * de análisis estratégico.
+ */
+createPreguntaAnalisis(
+  request: CreateCatPreguntaAnalisisRequest
+): Observable<ApiResponse<CatPreguntaAnalisisResponse>> {
+
+  return this.http.post<
+    ApiResponse<CatPreguntaAnalisisResponse>
+  >(
+    `${this.apiBaseUrl}/CatPreguntaAnalisis/create-pregunta`,
+    request
+  );
+
+}
+
+/*
+ * Actualiza el texto de una
+ * pregunta existente.
+ */
+updatePreguntaAnalisis(
+  id: number,
+  request: UpdateCatPreguntaAnalisisRequest
+): Observable<ApiResponse<CatPreguntaAnalisisResponse>> {
+
+  return this.http.put<
+    ApiResponse<CatPreguntaAnalisisResponse>
+  >(
+    `${this.apiBaseUrl}/CatPreguntaAnalisis/${id}`,
+    request
+  );
+
+}
+
+/*
+ * Activa o desactiva una
+ * pregunta de análisis estratégico.
+ */
+changePreguntaAnalisisStatus(
+  id: number,
+  request: ChangeStatusCatPreguntaAnalisisRequest
+): Observable<ApiResponse<CatPreguntaAnalisisResponse>> {
+
+  return this.http.patch<
+    ApiResponse<CatPreguntaAnalisisResponse>
+  >(
+    `${this.apiBaseUrl}/CatPreguntaAnalisis/${id}/status`,
+    request
+  );
+
 }
 
 }

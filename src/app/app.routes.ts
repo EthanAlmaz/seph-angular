@@ -32,11 +32,11 @@ export const routes: Routes = [
             .then(m => m.staffRegistrationRoutes)
       },
       {
-  path: 'institutional-information',
-  loadChildren: () =>
-    import('./features/institutional-information/institutionalInformationRoutes')
-      .then(m => m.institutionalInformationRoutes)
-}
+        path: 'institutional-information',
+        loadChildren: () =>
+          import('./features/institutional-information/institutionalInformationRoutes')
+            .then(m => m.institutionalInformationRoutes)
+      }
     ]
   },
   {
@@ -70,25 +70,39 @@ export const routes: Routes = [
           import('./features/admin/bitacoras/bitacorasRoutes').then(m => m.bitacorasRoutes)
       },
       {
-      path: 'periodos',
-      loadChildren: () =>
-      import('./features/admin/periods/periodsRoutes')
-      .then(m => m.periodsRoutes)
+        path: 'periodos',
+        loadChildren: () =>
+          import('./features/admin/periods/periodsRoutes')
+            .then(m => m.periodsRoutes)
       },
       {
-      /*
-       * Administración de periodos
-       * asignados a instituciones.
-       */
-      path: 'institution-periods',
-      loadChildren: () =>
-        import(
-          './features/admin/institution-periods/institutionPeriodsRoutes'
-        ).then(
-          m => m.institutionPeriodsRoutes
-        )
+        /*
+         * Administración de periodos
+         * asignados a instituciones.
+         */
+        path: 'institution-periods',
+        loadChildren: () =>
+          import(
+            './features/admin/institution-periods/institutionPeriodsRoutes'
+          ).then(
+            m => m.institutionPeriodsRoutes
+          )
+      },
+
+      {
+        /*
+         * Administración del catálogo
+         * de preguntas de análisis estratégico.
+         */
+        path: 'strategic-analysis-questions',
+        loadChildren: () =>
+          import(
+            './features/admin/strategic-analysis-questions/strategicAnalysisQuestionsRoutes'
+          ).then(
+            m => m.strategicAnalysisQuestionsRoutes
+          )
       }
-    
+
     ]
   },
   {
