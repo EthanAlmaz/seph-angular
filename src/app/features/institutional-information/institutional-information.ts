@@ -8,6 +8,7 @@ import { InfrastructureDataComponent } from './infrastructure-data/infrastructur
 import { VinculationDataComponent } from './vinculation-data/vinculation-data';
 import { FinanceDataComponent } from './finance-data/finance-data';
 import { StrategicAnalysisDataComponent } from './strategic-analysis-data/strategic-analysis-data';
+import { PatentDataComponent }from './patent-data/patent-data';
 
 @Component({
   selector: 'app-institutional-information',
@@ -20,7 +21,8 @@ import { StrategicAnalysisDataComponent } from './strategic-analysis-data/strate
     InfrastructureDataComponent,
     FinanceDataComponent,
     VinculationDataComponent,
-    StrategicAnalysisDataComponent
+    StrategicAnalysisDataComponent,
+    PatentDataComponent
 
   ],
   templateUrl: './institutional-information.html',
@@ -75,6 +77,14 @@ export class InstitutionalInformationComponent {
   */
   @ViewChild(StrategicAnalysisDataComponent)
   strategicAnalysisDataComponent?: StrategicAnalysisDataComponent;
+
+  /*
+  * Referencia al componente de patentes.
+  * Permite acceder a su información
+  * desde el componente contenedor.
+  */
+  @ViewChild(PatentDataComponent)
+  patentDataComponent?: PatentDataComponent;
 
   private cdr =
     inject(ChangeDetectorRef);
@@ -140,6 +150,7 @@ export class InstitutionalInformationComponent {
   goToStep(
     step: number
   ): void {
+     console.log('Paso seleccionado:', step);
 
     if (step === 1) {
 
@@ -186,6 +197,7 @@ export class InstitutionalInformationComponent {
     if (step === 5) {
 
       this.currentStep = step;
+        return;
 
     }
 
@@ -196,8 +208,21 @@ export class InstitutionalInformationComponent {
     if (step === 6) {
 
       this.currentStep = step;
+      return;
 
     }
+
+    /*
+    * Patentes corresponde
+    * al paso 7.
+    */
+    if (step === 7) {
+
+      this.currentStep = step;
+
+      return;
+
+}
 
   }
 
@@ -239,11 +264,6 @@ export class InstitutionalInformationComponent {
 
     }
 
-    if (this.currentStep === 5) {
-
-      this.saveVinculationSection();
-
-    }
     if (this.currentStep === 5) {
 
       this.saveVinculationSection();

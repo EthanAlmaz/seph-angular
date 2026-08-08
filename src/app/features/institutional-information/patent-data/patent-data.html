@@ -1,0 +1,683 @@
+<!-- Sección de registro de patentes. -->
+<div class="patent-section">
+
+  <!-- Encabezado principal del módulo. -->
+  <div class="section-header">
+
+    <div>
+
+      <h2>
+        Registro de Patentes
+      </h2>
+
+      <p>
+        Consulta y registra las patentes correspondientes
+        al periodo institucional activo.
+      </p>
+
+    </div>
+
+    
+    <!-- Inicia la captura de una nueva patente. -->
+    <button
+      *ngIf="activeView === 'list'"
+      type="button"
+      class="btn-primary"
+      [disabled]="!idMapInstitucionPeriodo"
+      (click)="startNewPatent()">
+
+      + Nueva patente
+
+    </button>
+
+  </div>
+
+  <!-- Notificación del resultado de una operación. -->
+  <div
+    *ngIf="saveMessage"
+    class="notification"
+    [class.success]="saveMessageType === 'success'"
+    [class.error]="saveMessageType === 'error'">
+
+    {{ saveMessage }}
+
+  </div>
+
+  <!-- Listado de patentes registradas. -->
+  <div
+    *ngIf="activeView === 'list'"
+    class="patent-list">
+
+    <div class="list-header">
+
+      <div>
+
+        <h3>
+          Patentes registradas
+        </h3>
+
+        <p>
+          Periodo: {{ periodo || 'No disponible' }}
+        </p>
+
+      </div>
+
+    </div>
+
+    <!-- Mensaje mostrado durante la consulta. -->
+    <div
+      *ngIf="isLoading"
+      class="empty-state">
+
+      Cargando patentes registradas...
+
+    </div>
+
+    <!-- Mensaje mostrado cuando no existen registros. -->
+    <div
+      *ngIf="!isLoading && patentes.length === 0"
+      class="empty-state">
+
+      No existen patentes registradas para el periodo activo.
+
+    </div>
+
+    <!-- Tabla de patentes registradas. -->
+    <div
+      *ngIf="!isLoading && patentes.length > 0"
+      class="table-container">
+
+      <table class="patent-table">
+
+        <thead>
+
+          <tr>
+
+            <th>
+              Nombre o título
+            </th>
+
+            <th>
+              Registro o solicitud
+            </th>
+
+            <th>
+              Tipo
+            </th>
+
+            <th>
+              Estatus
+            </th>
+
+            <th>
+              Titular
+            </th>
+
+            <th>
+              Acciones
+            </th>
+
+          </tr>
+
+        </thead>
+
+        <tbody>
+
+          <tr *ngFor="let patent of patentes">
+
+            <td>
+              {{ patent.strNombreTitulo }}
+            </td>
+
+            <td>
+              {{ patent.strNumeroRegistroSolicitud }}
+            </td>
+
+            <td>
+              {{ getTipoPatenteName(
+                patent.idTipoPatente
+              ) }}
+            </td>
+
+            <td>
+              {{ getEstatusPatenteName(
+                patent.idEstatusPatente
+              ) }}
+            </td>
+
+            <td>
+              {{ patent.strTitularPatente }}
+            </td>
+
+            <td>
+
+              <button
+                type="button"
+                class="btn-edit"
+                (click)="editPatent(patent)">
+
+                Editar
+
+              </button>
+
+            </td>
+
+          </tr>
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+  </div>
+
+  <!-- Formulario de captura y edición. -->
+  <div
+    *ngIf="activeView === 'capture'"
+    class="form-page">
+
+    <!-- Encabezado del formulario. -->
+    <div class="form-header">
+
+      <div>
+
+        <h3>
+          {{
+            isEditing
+              ? 'Editar patente'
+              : 'Nueva patente'
+          }}
+        </h3>
+
+        <p>
+          Periodo: {{ periodo || 'No disponible' }}
+        </p>
+
+      </div>
+
+      <div class="view-actions">
+
+        <button
+          type="button"
+          class="active"
+          (click)="showCapture()">
+
+          Captura
+
+        </button>
+
+        <button
+          type="button"
+          (click)="showPreview()">
+
+          Vista previa
+
+        </button>
+
+      </div>
+
+    </div>
+
+    <!-- Datos generales de la patente. -->
+    <div class="form-grid">
+
+      <div class="form-field full-width">
+
+        <label for="nombreTitulo">
+          Nombre o título de la patente
+        </label>
+
+        <input
+          id="nombreTitulo"
+          type="text"
+          maxlength="250"
+          [(ngModel)]="patentReport.nombreTitulo"
+          placeholder="Ingresa el nombre o título" />
+
+      </div>
+
+      <div class="form-field">
+
+        <label for="numeroRegistroSolicitud">
+          Número de registro o solicitud
+        </label>
+
+        <input
+          id="numeroRegistroSolicitud"
+          type="text"
+          maxlength="100"
+          [(ngModel)]="
+            patentReport.numeroRegistroSolicitud
+          "
+          placeholder="Ingresa el número" />
+
+      </div>
+
+      <div class="form-field">
+
+        <label for="tipoPatente">
+          Tipo de patente
+        </label>
+
+        <select
+          id="tipoPatente"
+          [(ngModel)]="patentReport.idTipoPatente">
+
+          <option [ngValue]="null">
+            Selecciona una opción
+          </option>
+
+          <option
+            *ngFor="let tipo of tiposPatente"
+            [ngValue]="tipo.id">
+
+            {{ tipo.strDescripcion }}
+
+          </option>
+
+        </select>
+
+      </div>
+
+      <div class="form-field">
+
+        <label for="estatusPatente">
+          Estatus de la patente
+        </label>
+
+        <select
+          id="estatusPatente"
+          [(ngModel)]="patentReport.idEstatusPatente">
+
+          <option [ngValue]="null">
+            Selecciona una opción
+          </option>
+
+          <option
+            *ngFor="let estatus of estatusPatente"
+            [ngValue]="estatus.id">
+
+            {{ estatus.strDescripcion }}
+
+          </option>
+
+        </select>
+
+      </div>
+
+      <div class="form-field">
+
+        <label for="titularPatente">
+          Titular de la patente
+        </label>
+
+        <input
+          id="titularPatente"
+          type="text"
+          maxlength="250"
+          [(ngModel)]="patentReport.titularPatente"
+          placeholder="Ingresa el titular" />
+
+      </div>
+
+      <div class="form-field">
+
+        <label for="fechaSolicitud">
+          Fecha de solicitud
+        </label>
+
+        <input
+          id="fechaSolicitud"
+          type="date"
+          [(ngModel)]="patentReport.fechaSolicitud" />
+
+      </div>
+
+      <div class="form-field">
+
+        <label for="fechaConcesion">
+          Fecha de concesión
+        </label>
+
+        <input
+          id="fechaConcesion"
+          type="date"
+          [(ngModel)]="patentReport.fechaConcesion" />
+
+        <small>
+          Este campo puede quedar vacío si la patente
+          todavía no ha sido concedida.
+        </small>
+
+      </div>
+
+    </div>
+
+    <!-- Registro de inventores de la patente. -->
+    <div class="inventors-section">
+
+      <div class="subsection-header">
+
+        <div>
+
+          <h4>
+            Inventores
+          </h4>
+
+          <p>
+            Agrega las personas que participaron
+            como inventores de la patente.
+          </p>
+
+        </div>
+
+      </div>
+
+      <!-- Campo para agregar un inventor. -->
+      <div class="inventor-input">
+
+        <div class="form-field">
+
+          <label for="nuevoInventor">
+            Nombre completo del inventor
+          </label>
+
+          <input
+            id="nuevoInventor"
+            type="text"
+            maxlength="200"
+            [(ngModel)]="nuevoInventor"
+            placeholder="Ingresa el nombre completo"
+            (keyup.enter)="addInventor()" />
+
+        </div>
+
+        <button
+          type="button"
+          class="btn-secondary"
+          (click)="addInventor()">
+
+          Agregar
+
+        </button>
+
+      </div>
+
+      <!-- Mensaje cuando todavía no existen inventores. -->
+      <div
+        *ngIf="patentReport.inventores.length === 0"
+        class="empty-state small">
+
+        No se han agregado inventores.
+
+      </div>
+
+      <!-- Lista de inventores agregados. -->
+      <div
+        *ngIf="patentReport.inventores.length > 0"
+        class="inventors-list">
+
+        <div
+          *ngFor="
+            let inventor of patentReport.inventores;
+            let index = index
+          "
+          class="inventor-item">
+
+          <span>
+            {{ inventor.strNombreCompleto }}
+          </span>
+
+          <button
+            type="button"
+            class="btn-remove"
+            (click)="removeInventor(index)">
+
+            Eliminar
+
+          </button>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- Acciones del formulario de captura. -->
+   <!-- Acciones del formulario de captura. -->
+<div class="form-actions">
+
+  <button
+    type="button"
+    class="btn-secondary"
+    [disabled]="isSaving"
+    (click)="cancelEdit()">
+
+    Cancelar
+
+  </button>
+
+  <button
+    type="button"
+    class="btn-primary"
+    [disabled]="isSaving"
+    (click)="savePatent()">
+
+    {{
+      isSaving
+        ? 'Guardando...'
+        : isEditing
+          ? 'Guardar cambios'
+          : 'Registrar patente'
+    }}
+
+  </button>
+
+</div>
+
+  </div>
+
+  <!-- Vista previa de la patente capturada. -->
+  <div
+    *ngIf="activeView === 'preview'"
+    class="preview-page">
+
+    <!-- Encabezado de la vista previa. -->
+    <div class="form-header">
+
+      <div>
+
+        <h3>
+          Vista previa de la patente
+        </h3>
+
+        <p>
+          Periodo: {{ periodo || 'No disponible' }}
+        </p>
+
+      </div>
+
+      <div class="view-actions">
+
+        <button
+          type="button"
+          (click)="showCapture()">
+
+          Captura
+
+        </button>
+
+        <button
+          type="button"
+          class="active"
+          (click)="showPreview()">
+
+          Vista previa
+
+        </button>
+
+      </div>
+
+    </div>
+
+    <!-- Resumen de los datos generales. -->
+    <div class="preview-grid">
+
+      <div class="preview-card full-width">
+
+        <span>
+          Nombre o título
+        </span>
+
+        <strong>
+          {{ patentReport.nombreTitulo }}
+        </strong>
+
+      </div>
+
+      <div class="preview-card">
+
+        <span>
+          Número de registro o solicitud
+        </span>
+
+        <strong>
+          {{ patentReport.numeroRegistroSolicitud }}
+        </strong>
+
+      </div>
+
+      <div class="preview-card">
+
+        <span>
+          Tipo de patente
+        </span>
+
+        <strong>
+          {{ getTipoPatenteName(
+            patentReport.idTipoPatente
+          ) }}
+        </strong>
+
+      </div>
+
+      <div class="preview-card">
+
+        <span>
+          Estatus
+        </span>
+
+        <strong>
+          {{ getEstatusPatenteName(
+            patentReport.idEstatusPatente
+          ) }}
+        </strong>
+
+      </div>
+
+      <div class="preview-card">
+
+        <span>
+          Titular
+        </span>
+
+        <strong>
+          {{ patentReport.titularPatente }}
+        </strong>
+
+      </div>
+
+      <div class="preview-card">
+
+        <span>
+          Fecha de solicitud
+        </span>
+
+        <strong>
+          {{
+            patentReport.fechaSolicitud
+              | date:'dd/MM/yyyy'
+          }}
+        </strong>
+
+      </div>
+
+      <div class="preview-card">
+
+        <span>
+          Fecha de concesión
+        </span>
+
+        <strong>
+          {{
+            patentReport.fechaConcesion
+              ? (
+                  patentReport.fechaConcesion
+                    | date:'dd/MM/yyyy'
+                )
+              : 'No especificada'
+          }}
+        </strong>
+
+      </div>
+
+    </div>
+
+    <!-- Inventores registrados en la patente. -->
+    <div class="preview-inventors">
+
+      <h4>
+        Inventores
+      </h4>
+
+      <div class="inventors-list">
+
+        <div
+          *ngFor="let inventor of patentReport.inventores"
+          class="inventor-item preview">
+
+          <span>
+            {{ inventor.strNombreCompleto }}
+          </span>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- Acciones finales de la vista previa. -->
+    <div class="form-actions">
+
+      <button
+        type="button"
+        class="btn-secondary"
+        [disabled]="isSaving"
+        (click)="showCapture()">
+
+        Regresar a captura
+
+      </button>
+
+      <button
+        type="button"
+        class="btn-primary"
+        [disabled]="isSaving"
+        (click)="savePatent()">
+
+        {{
+          isSaving
+            ? 'Guardando...'
+            : isEditing
+              ? 'Guardar cambios'
+              : 'Registrar patente'
+        }}
+
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
