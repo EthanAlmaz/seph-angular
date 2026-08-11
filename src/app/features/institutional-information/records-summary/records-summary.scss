@@ -1,4 +1,6 @@
-//Comment
+/*
+ * Contenedor principal del concentrado.
+ */
 .summary-page {
   min-height: 370px;
   padding: 40px 60px 60px;
@@ -38,7 +40,6 @@
   justify-content: center;
   height: 36px;
   padding: 0 22px;
-  border: none;
   border-radius: 5px;
   font-size: 12px;
   font-weight: 600;
@@ -47,16 +48,20 @@
 }
 
 .btn-primary {
+  border: none;
   background: #65122e;
   color: #ffffff;
 }
 
 .btn-secondary {
+  border: 1px solid #65122e;
   background: #ffffff;
   color: #65122e;
-  border: 1px solid #65122e;
 }
 
+/*
+ * Notificaciones.
+ */
 .notification {
   margin-bottom: 16px;
   padding: 10px 14px;
@@ -65,27 +70,30 @@
 }
 
 .notification.success {
+  border: 1px solid #23b64b;
   background: #e8f7ee;
   color: #23b64b;
-  border: 1px solid #23b64b;
 }
 
 .notification.error {
+  border: 1px solid #c00000;
   background: #fdeaea;
   color: #c00000;
-  border: 1px solid #c00000;
 }
 
-.loading {
+/*
+ * Estados de carga y sin registros.
+ */
+.loading-state {
   font-size: 12px;
   color: #555555;
 }
 
 .empty-state {
+  padding: 50px 20px;
   border: 1px solid #dddddd;
   border-radius: 10px;
   box-shadow: 0 3px 4px rgba(0, 0, 0, 0.25);
-  padding: 50px 20px;
   text-align: center;
 }
 
@@ -95,11 +103,14 @@
   color: #65122e;
 }
 
-.table-card {
+/*
+ * Concentrado de registros.
+ */
+.table-container {
+  overflow: auto;
   border: 1px solid #dddddd;
   border-radius: 10px;
   box-shadow: 0 3px 4px rgba(0, 0, 0, 0.25);
-  overflow: auto;
 }
 
 .records-table {
@@ -131,6 +142,9 @@
   background: #faf5f7;
 }
 
+/*
+ * Estados de los registros.
+ */
 .badge {
   display: inline-block;
   padding: 4px 12px;
@@ -148,6 +162,15 @@
   background: #c00000;
 }
 
+/*
+ * Acciones de la tabla.
+ */
+.actions-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .btn-continue {
   display: inline-block;
   padding: 5px 14px;
@@ -160,46 +183,44 @@
   white-space: nowrap;
 }
 
-.action-done {
-  color: #999999;
-}
-
-.actions-cell {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-}
-
 .btn-detalle {
   display: inline-block;
   padding: 5px 14px;
+  border: 1px solid #65122e;
   border-radius: 5px;
   background: #ffffff;
   color: #65122e;
-  border: 1px solid #65122e;
   font-size: 11px;
   font-weight: 600;
   cursor: pointer;
   white-space: nowrap;
 }
 
+.action-done {
+  color: #999999;
+}
+
+/*
+ * Modal del detalle.
+ */
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.45);
+  z-index: 100;
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 100;
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.45);
 }
 
 .modal-card {
-  width: 420px;
+  width: 680px;
   max-width: calc(100vw - 40px);
   max-height: calc(100vh - 80px);
   overflow-y: auto;
-  background: #ffffff;
   border-radius: 10px;
+  background: #ffffff;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
 }
 
@@ -209,8 +230,8 @@
   justify-content: space-between;
   padding: 16px 20px;
   border-bottom: 1px solid #eeeeee;
-  background: #65122e;
   border-radius: 10px 10px 0 0;
+  background: #65122e;
 }
 
 .modal-header h3 {
@@ -220,18 +241,21 @@
 }
 
 .btn-close {
-  background: none;
   border: none;
+  background: none;
   color: #ffffff;
   font-size: 14px;
-  cursor: pointer;
   line-height: 1;
+  cursor: pointer;
 }
 
 .modal-body {
   padding: 16px 20px 20px;
 }
 
+/*
+ * Información general del empleado.
+ */
 .detail-row {
   display: flex;
   flex-direction: column;
@@ -246,12 +270,116 @@
 
 .detail-label {
   font-size: 11px;
-  color: #999999;
   font-weight: 600;
+  color: #999999;
   text-transform: uppercase;
 }
 
 .detail-value {
   font-size: 13px;
   color: #333333;
+}
+
+/*
+ * Fotografía e identificación del empleado.
+ */
+.detail-images {
+  display: grid;
+  grid-template-columns: minmax(180px, 220px) minmax(280px, 1fr);
+  align-items: start;
+  gap: 18px;
+  padding: 18px 0;
+  border-bottom: 1px solid #f2f2f2;
+}
+
+.detail-image-card {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 14px;
+  border: 1px solid #dddddd;
+  border-radius: 8px;
+  background: #fafafa;
+}
+
+.detail-image-title {
+  width: 100%;
+  font-size: 11px;
+  font-weight: 600;
+  color: #65122e;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+/*
+ * La fotografía se presenta en formato vertical.
+ */
+.detail-photo {
+  width: 150px;
+  height: 190px;
+  border: 1px solid #dddddd;
+  border-radius: 6px;
+  background: #ffffff;
+  object-fit: contain;
+}
+
+/*
+ * El INE se presenta en formato horizontal.
+ */
+.detail-ine {
+  width: 100%;
+  max-width: 320px;
+  height: 190px;
+  border: 1px solid #dddddd;
+  border-radius: 6px;
+  background: #ffffff;
+  object-fit: contain;
+}
+
+.detail-image-empty {
+  display: flex;
+  width: 100%;
+  min-height: 190px;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+  border: 1px dashed #cccccc;
+  border-radius: 6px;
+  background: #ffffff;
+  color: #999999;
+  font-size: 11px;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+/*
+ * Adaptación para pantallas pequeñas.
+ */
+@media (max-width: 720px) {
+  .summary-page {
+    padding: 28px 20px 40px;
+  }
+
+  .summary-header {
+    flex-direction: column;
+  }
+
+  .summary-actions {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .detail-images {
+    grid-template-columns: 1fr;
+  }
+
+  .detail-photo {
+    width: 150px;
+  }
+
+  .detail-ine {
+    max-width: 100%;
+  }
 }

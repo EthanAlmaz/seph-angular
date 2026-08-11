@@ -1,244 +1,329 @@
-<!-- Concentrado de Registros de Personal.
-Vista inicial del módulo: lista los registros capturados
-y permite iniciar un nuevo registro. -->
-<div class="summary-page">
+<!-- Encabezado del concentrado. -->
+<div class="summary-title">
+  <h2>Registro de Personal de la DGES</h2>
+  <p>Concentrado de los registros capturados</p>
+</div>
 
-  <!-- Encabezado: título del concentrado y acciones. -->
-  <div class="summary-header">
+<!-- Acciones principales. -->
+<div class="summary-actions">
 
-    <div class="summary-title">
-      <h2>Registro de Personal de la DGES</h2>
-      <p>Concentrado de los registros capturados</p>
-    </div>
+  <a
+    class="btn-secondary"
+    routerLink="/home">
+    Inicio
+  </a>
 
-    <div class="summary-actions">
+  <!-- Inicia el flujo de captura. -->
+  <a
+    class="btn-primary"
+    routerLink="/staff-registration/nuevo">
+    + Nuevo Registro
+  </a>
 
-      <a>
-        class="btn-secondary"
-        routerLink="/home">
-        Inicio
-      </a>
+</div>
 
-      <!-- Inicia el flujo de captura (Información personal + Historial de contrato). -->
-      <a
-        class="btn-primary"
-        routerLink="/staff-registration/nuevo">
-        + Nuevo Registro
-      </a>
+<!-- Notificación general. -->
+<div
+  *ngIf="notificationMessage()"
+  class="notification"
+  [class.success]="notificationType() === 'success'"
+  [class.error]="notificationType() === 'error'">
 
-    </div>
+  {{ notificationMessage() }}
 
-  </div>  
+</div>
 
-  <!-- Aviso de error al cargar. -->
-  <div
-    class="notification"
-    [class.success]="notificationType() === 'success'"
-    [class.error]="notificationType() === 'error'"
-    *ngIf="notificationMessage()">
+<!-- Estado de carga. -->
+<div
+  *ngIf="isLoading()"
+  class="loading-state">
 
-    {{ notificationMessage() }}
+  <p>Cargando registros...</p>
 
-  </div>
+</div>
 
-  <!-- Estado de carga. -->
-  <p
-    class="loading"
-    *ngIf="isLoading()">
-    Cargando registros...
-  </p>
+<!-- Mensaje cuando no existen registros. -->
+<div
+  *ngIf="!isLoading() && registros().length === 0"
+  class="empty-state">
 
-  <!-- Mensaje cuando aún no hay registros capturados. -->
-  <div
-    class="empty-state"
-    *ngIf="!isLoading() && registros().length === 0">
+  <p>Aún no has capturado ningún registro.</p>
 
-    <p>Aún no has capturado ningún registro.</p>
+  <a
+    class="btn-primary"
+    routerLink="/staff-registration/nuevo">
+    Comenzar un registro
+  </a>
 
-    <a
-      class="btn-primary"
-      routerLink="/staff-registration/nuevo">
-      Comenzar un registro
-    </a>
+</div>
 
-  </div>
+<!-- Concentrado de registros. -->
+<div
+  *ngIf="!isLoading() && registros().length > 0"
+  class="table-container">
 
-  <!-- Tabla del concentrado. -->
-  <div
-    class="table-card"
-    *ngIf="!isLoading() && registros().length > 0">
+  <table class="records-table">
 
-    <table class="records-table">
+    <thead>
+      <tr>
+        <th>Nombre completo</th>
+        <th>CURP</th>
+        <th>Sexo</th>
+        <th>Institución</th>
+        <th>Tipo de personal</th>
+        <th>Tipo de contrato</th>
+        <th>Área</th>
+        <th>Fecha de ingreso</th>
+        <th>Estado</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
 
-      <thead>
-        <tr>
-          <th>Nombre completo</th>
-          <th>CURP</th>
-          <th>Sexo</th>
-          <th>Institución</th>
-          <th>Tipo de personal</th>
-          <th>Tipo de contrato</th>
-          <th>Área</th>
-          <th>Fecha de ingreso</th>
-          <th>Estado</th>
-          <th>Acciones</th>
-        </tr>
-      </thead>
+    <tbody>
+      <tr *ngFor="let registro of registros()">
 
-      <tbody>
-        <tr *ngFor="let registro of registros()">
+        <td>{{ fullName(registro) }}</td>
 
-          <td>{{ fullName(registro) }}</td>
+        <td>{{ registro.strCurp }}</td>
 
-          <td>{{ registro.strCurp }}</td>
+        <td>{{ registro.strSexo }}</td>
 
-          <td>{{ registro.strSexo }}</td>
+        <td>{{ registro.strInstitucion ?? '—' }}</td>
 
-          <td>{{ registro.strInstitucion ?? '—' }}</td>
+        <td>{{ registro.strTipoPersonal ?? '—' }}</td>
 
-          <td>{{ registro.strTipoPersonal ?? '—' }}</td>
+        <td>{{ registro.strTipoContrato ?? '—' }}</td>
 
-          <td>{{ registro.strTipoContrato ?? '—' }}</td>
+        <td>{{ registro.strArea ?? '—' }}</td>
 
-          <td>{{ registro.strArea ?? '—' }}</td>
-
-          <td>
-            {{ registro.dateFechaIngreso
+        <td>
+          {{
+            registro.dateFechaIngreso
               ? (registro.dateFechaIngreso | date: 'dd/MM/yyyy')
-              : '—' }}
-          </td>
+              : '—'
+          }}
+        </td>
 
-          <!-- Completo: empleado + historial de contrato guardados.
-          Incompleto: solo se guardó la información personal. -->
-          <td>
-            <span
-              class="badge"
-              [class.badge-complete]="registro.bitContratoCompleto"
-              [class.badge-incomplete]="!registro.bitContratoCompleto">
+        <!--
+          Completo: empleado e historial de contrato guardados.
+          Incompleto: solo se guardó la información personal.
+        -->
+        <td>
+          <span
+            class="badge"
+            [class.badge-complete]="registro.bitContratoCompleto"
+            [class.badge-incomplete]="!registro.bitContratoCompleto">
 
-              {{ registro.bitContratoCompleto ? 'Completo' : 'Incompleto' }}
+            {{
+              registro.bitContratoCompleto
+                ? 'Completo'
+                : 'Incompleto'
+            }}
 
-            </span>
-          </td>
+          </span>
+        </td>
 
-          <!-- Acciones. Si el registro está incompleto (falta el
-          historial de contrato) se ofrece continuarlo: lleva al paso
-          que se quedó sin completar, con el empleado ya guardado
-          (?empleado=ID). "Detalle" siempre está disponible. -->
-          <td class="actions-cell">
-            <a
-              *ngIf="!registro.bitContratoCompleto"
-              class="btn-continue"
-              [routerLink]="['/staff-registration/nuevo']"
-              [queryParams]="{ empleado: registro.idEmpleado }">
-              Continuar
-            </a>
+        <!-- Acciones disponibles para el registro. -->
+        <td class="actions-cell">
 
-            <button
-              type="button"
-              class="btn-detalle"
-              (click)="openDetalle(registro)">
-              Detalle
-            </button>
-          </td>
+          <a
+            *ngIf="!registro.bitContratoCompleto"
+            class="btn-continue"
+            [routerLink]="['/staff-registration/nuevo']"
+            [queryParams]="{ empleado: registro.idEmpleado }">
+            Continuar
+          </a>
 
-        </tr>
-      </tbody>
+          <button
+            type="button"
+            class="btn-detalle"
+            (click)="openDetalle(registro)">
+            Detalle
+          </button>
 
-    </table>
+        </td>
 
-  </div>
+      </tr>
+    </tbody>
 
-  <!-- Modal de Detalle: información completa del registro seleccionado. -->
+  </table>
+
+</div>
+
+<!-- Modal del detalle del registro. -->
+<div
+  *ngIf="selectedRegistro() as registro"
+  class="modal-overlay"
+  (click)="closeDetalle()">
+
   <div
-    class="modal-overlay"
-    *ngIf="selectedRegistro() as registro"
-    (click)="closeDetalle()">
+    class="modal-card"
+    (click)="$event.stopPropagation()">
 
-    <div
-      class="modal-card"
-      (click)="$event.stopPropagation()">
+    <!-- Encabezado del modal. -->
+    <div class="modal-header">
 
-      <div class="modal-header">
-        <h3>Detalle del registro</h3>
+      <h3>Detalle del registro</h3>
 
-        <button
-          type="button"
-          class="btn-close"
-          (click)="closeDetalle()">
-          ✕
-        </button>
+      <button
+        type="button"
+        class="btn-close"
+        aria-label="Cerrar detalle"
+        (click)="closeDetalle()">
+        ✕
+      </button>
+
+    </div>
+
+    <!-- Información del empleado. -->
+    <div class="modal-body">
+
+      <div class="detail-row">
+        <span class="detail-label">Nombre completo</span>
+        <span class="detail-value">
+          {{ fullName(registro) }}
+        </span>
       </div>
 
-      <div class="modal-body">
+      <div class="detail-row">
+        <span class="detail-label">CURP</span>
+        <span class="detail-value">
+          {{ registro.strCurp }}
+        </span>
+      </div>
 
-        <div class="detail-row">
-          <span class="detail-label">Nombre completo</span>
-          <span class="detail-value">{{ fullName(registro) }}</span>
-        </div>
+      <div class="detail-row">
+        <span class="detail-label">Sexo</span>
+        <span class="detail-value">
+          {{ registro.strSexo }}
+        </span>
+      </div>
 
-        <div class="detail-row">
-          <span class="detail-label">CURP</span>
-          <span class="detail-value">{{ registro.strCurp }}</span>
-        </div>
+      <div class="detail-row">
+        <span class="detail-label">Perfil(es) académico(s)</span>
+        <span class="detail-value">
+          {{ perfilesAcademicosTexto(registro) }}
+        </span>
+      </div>
 
-        <div class="detail-row">
-          <span class="detail-label">Sexo</span>
-          <span class="detail-value">{{ registro.strSexo }}</span>
-        </div>
+      <div class="detail-row">
+        <span class="detail-label">SNI/SNII</span>
+        <span class="detail-value">
+          {{ registro.strSNII ?? '—' }}
+        </span>
+      </div>
 
-        <div class="detail-row">
-          <span class="detail-label">Perfil(es) académico(s)</span>
-          <span class="detail-value">{{ perfilesAcademicosTexto(registro) }}</span>
-        </div>
+      <div class="detail-row">
+        <span class="detail-label">Institución</span>
+        <span class="detail-value">
+          {{ registro.strInstitucion ?? '—' }}
+        </span>
+      </div>
 
-        <div class="detail-row">
-          <span class="detail-label">SNI/SNII</span>
-          <span class="detail-value">{{ registro.strSNII ?? '—' }}</span>
-        </div>
+      <div class="detail-row">
+        <span class="detail-label">Tipo de personal</span>
+        <span class="detail-value">
+          {{ registro.strTipoPersonal ?? '—' }}
+        </span>
+      </div>
 
-        <div class="detail-row">
-          <span class="detail-label">Institución</span>
-          <span class="detail-value">{{ registro.strInstitucion ?? '—' }}</span>
-        </div>
+      <div class="detail-row">
+        <span class="detail-label">Tipo de contrato</span>
+        <span class="detail-value">
+          {{ registro.strTipoContrato ?? '—' }}
+        </span>
+      </div>
 
-        <div class="detail-row">
-          <span class="detail-label">Tipo de personal</span>
-          <span class="detail-value">{{ registro.strTipoPersonal ?? '—' }}</span>
-        </div>
+      <div class="detail-row">
+        <span class="detail-label">Área</span>
+        <span class="detail-value">
+          {{ registro.strArea ?? '—' }}
+        </span>
+      </div>
 
-        <div class="detail-row">
-          <span class="detail-label">Tipo de contrato</span>
-          <span class="detail-value">{{ registro.strTipoContrato ?? '—' }}</span>
-        </div>
-
-        <div class="detail-row">
-          <span class="detail-label">Área</span>
-          <span class="detail-value">{{ registro.strArea ?? '—' }}</span>
-        </div>
-
-        <div class="detail-row">
-          <span class="detail-label">Fecha de ingreso</span>
-          <span class="detail-value">
-            {{ registro.dateFechaIngreso
+      <div class="detail-row">
+        <span class="detail-label">Fecha de ingreso</span>
+        <span class="detail-value">
+          {{
+            registro.dateFechaIngreso
               ? (registro.dateFechaIngreso | date: 'dd/MM/yyyy')
-              : '—' }}
+              : '—'
+          }}
+        </span>
+      </div>
+
+      <!-- Imágenes registradas del empleado. -->
+      <div class="detail-images">
+
+        <!-- Fotografía del empleado. -->
+        <div class="detail-image-card">
+
+          <span class="detail-image-title">
+            Fotografía
           </span>
+
+          <img
+            *ngIf="registro.strRutaFotografia; else sinFotografia"
+            class="detail-photo"
+            [src]="registro.strRutaFotografia"
+            alt="Fotografía del empleado"
+          />
+
+          <ng-template #sinFotografia>
+            <div class="detail-image-empty">
+              Imagen no disponible
+            </div>
+          </ng-template>
+
         </div>
 
-        <div class="detail-row">
-          <span class="detail-label">Estado</span>
-          <span class="detail-value">
-            <span
-              class="badge"
-              [class.badge-complete]="registro.bitContratoCompleto"
-              [class.badge-incomplete]="!registro.bitContratoCompleto">
+        <!-- Identificación oficial del empleado. -->
+        <div class="detail-image-card">
 
-              {{ registro.bitContratoCompleto ? 'Completo' : 'Incompleto' }}
-
-            </span>
+          <span class="detail-image-title">
+            INE
           </span>
+
+          <img
+            *ngIf="registro.strRutaIne; else sinIne"
+            class="detail-ine"
+            [src]="registro.strRutaIne"
+            alt="INE del empleado"
+          />
+
+          <ng-template #sinIne>
+            <div class="detail-image-empty">
+              Imagen no disponible
+            </div>
+          </ng-template>
+
         </div>
+
+      </div>
+
+      <!-- Estado del registro. -->
+      <div class="detail-row">
+
+        <span class="detail-label">
+          Estado
+        </span>
+
+        <span class="detail-value">
+
+          <span
+            class="badge"
+            [class.badge-complete]="registro.bitContratoCompleto"
+            [class.badge-incomplete]="!registro.bitContratoCompleto">
+
+            {{
+              registro.bitContratoCompleto
+                ? 'Completo'
+                : 'Incompleto'
+            }}
+
+          </span>
+
+        </span>
 
       </div>
 

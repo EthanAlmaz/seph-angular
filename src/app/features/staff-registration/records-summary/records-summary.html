@@ -217,27 +217,100 @@ y permite iniciar un nuevo registro. -->
         </div>
 
         <div class="detail-row">
-          <span class="detail-label">Fecha de ingreso</span>
-          <span class="detail-value">
-            {{ registro.dateFechaIngreso
-              ? (registro.dateFechaIngreso | date: 'dd/MM/yyyy')
-              : '—' }}
-          </span>
-        </div>
+  <span class="detail-label">Fecha de ingreso</span>
 
-        <div class="detail-row">
-          <span class="detail-label">Estado</span>
-          <span class="detail-value">
-            <span
-              class="badge"
-              [class.badge-complete]="registro.bitContratoCompleto"
-              [class.badge-incomplete]="!registro.bitContratoCompleto">
+  <span class="detail-value">
+    {{
+      registro.dateFechaIngreso
+        ? (registro.dateFechaIngreso | date: 'dd/MM/yyyy')
+        : '—'
+    }}
+  </span>
+</div>
 
-              {{ registro.bitContratoCompleto ? 'Completo' : 'Incompleto' }}
+<!-- Identificación oficial del empleado. -->
+<div class="detail-image-section">
+  <span class="detail-label">
+    Identificación oficial (INE)
+  </span>
 
-            </span>
-          </span>
-        </div>
+  @if (!registro.strRutaIne) {
+    <div class="detail-image-empty">
+      Imagen no disponible
+    </div>
+  } @else if (detalleIneEsPdf()) {
+    <div class="detail-image-container">
+      @if (detalleIneUrl(); as url) {
+        <a
+          [href]="url"
+          target="_blank"
+          rel="noopener noreferrer">
+          Ver documento (PDF)
+        </a>
+      } @else {
+        <span class="detail-value">
+          Cargando...
+        </span>
+      }
+    </div>
+  } @else {
+    <div class="detail-image-container">
+      @if (detalleIneUrl(); as url) {
+        <img
+          class="detail-ine"
+          [src]="url"
+          alt="INE del empleado"
+        />
+      } @else {
+        <span class="detail-value">
+          Cargando...
+        </span>
+      }
+    </div>
+  }
+</div>
+
+<!-- Fotografía del empleado. -->
+<div class="detail-image-section">
+  <span class="detail-label">
+    Fotografía
+  </span>
+
+  @if (!registro.strRutaFotografia) {
+    <div class="detail-image-empty">
+      Imagen no disponible
+    </div>
+  } @else {
+    <div class="detail-image-container">
+      @if (detalleFotoUrl(); as url) {
+        <img
+          class="detail-photo"
+          [src]="url"
+          alt="Fotografía del empleado"
+        />
+      } @else {
+        <span class="detail-value">
+          Cargando...
+        </span>
+      }
+    </div>
+  }
+</div>
+
+<div class="detail-row">
+  <span class="detail-label">Estado</span>
+
+  <span class="detail-value">
+    <span
+      class="badge"
+      [class.badge-complete]="registro.bitContratoCompleto"
+      [class.badge-incomplete]="!registro.bitContratoCompleto">
+
+      {{ registro.bitContratoCompleto ? 'Completo' : 'Incompleto' }}
+
+    </span>
+  </span>
+</div>
 
       </div>
 

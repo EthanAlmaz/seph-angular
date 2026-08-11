@@ -16,6 +16,8 @@ export interface RegistroPersonalResponse {
   bitDatosAcademicosCompletos: boolean;
   bitContratoCompleto: boolean;
   strSNII: string | null;
+  strRutaIne: string | null;
+strRutaFotografia: string | null;
   perfilesAcademicos: string[];
   strInstitucion: string | null;
   strTipoPersonal: string | null;
