@@ -1,7 +1,8 @@
-/* Detalle completo de un empleado (datos básicos + académicos).
-Se usa para poblar el formulario de Información Personal
-al retomar un registro incompleto (Atrás / Continuar). */
-
+/*
+ * Detalle completo de un empleado (datos básicos + académicos).
+ * Se usa para poblar el formulario de Información Personal
+ * al retomar un registro incompleto (Atrás / Continuar).
+ */
 export interface EmpleadoDetailResponse {
   id: number;
   strNombre: string;
@@ -10,6 +11,8 @@ export interface EmpleadoDetailResponse {
   strCurp: string;
   idSexo: number;
   strSNII: string | null;
+  strRutaIne: string | null;
+  strRutaFotografia: string | null;
   idsPerfilAcademico: number[];
   bitDatosAcademicosCompletos: boolean;
 }

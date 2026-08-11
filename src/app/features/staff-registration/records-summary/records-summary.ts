@@ -5,7 +5,8 @@ import { RouterLink } from '@angular/router';
 import { StaffRegistrationService } from '../../../core/services/staff-registration/staff-registration.service';
 import { RegistroPersonalResponse }
 from '../../../shared/models/staff-registration/responses/registroPersonalResponse';
-
+import { ImageUploadService }
+from '../../../core/services/images/image-upload.service';
 /* Concentrado de Registros de Personal.
 Muestra en una tabla los registros capturados por el usuario
 (empleado + historial de contrato) y permite iniciar
@@ -22,6 +23,7 @@ con campos normales la vista no se actualiza al llegar la respuesta. */
 export class RecordsSummaryComponent implements OnInit {
 
   private staffRegistrationService = inject(StaffRegistrationService);
+  private readonly imageUploadService = inject(ImageUploadService);
 
   registros = signal<RegistroPersonalResponse[]>([]);
 
@@ -33,19 +35,29 @@ export class RecordsSummaryComponent implements OnInit {
   /* Registro seleccionado para mostrar en la modal de Detalle.
   null cuando la modal está cerrada. */
   selectedRegistro = signal<RegistroPersonalResponse | null>(null);
+  /*
+ * URLs temporales de los archivos protegidos
+ * mostrados en el detalle.
+ */
+detalleIneUrl = signal<string | null>(null);
+detalleFotoUrl = signal<string | null>(null);
+detalleIneEsPdf = signal(false);
+
 
   ngOnInit(): void {
     this.loadRegistros();
   }
 
-  /* Abre la modal de Detalle con el registro seleccionado. */
-  openDetalle(registro: RegistroPersonalResponse): void {
-    this.selectedRegistro.set(registro);
-  }
+ /* Abre la modal y carga las imágenes protegidas. */
+openDetalle(registro: RegistroPersonalResponse): void {
+  this.selectedRegistro.set(registro);
+  this.cargarImagenesDetalle(registro);
+}
 
-  closeDetalle(): void {
-    this.selectedRegistro.set(null);
-  }
+closeDetalle(): void {
+  this.selectedRegistro.set(null);
+  this.limpiarUrlsDetalle();
+}
 
   /* Texto de los perfiles académicos para la modal de Detalle. */
   perfilesAcademicosTexto(registro: RegistroPersonalResponse): string {
@@ -53,6 +65,73 @@ export class RecordsSummaryComponent implements OnInit {
       ? registro.perfilesAcademicos.join(', ')
       : '—';
   }
+
+  /*
+ * Descarga el INE y la fotografía mediante HttpClient.
+ * El interceptor agrega el token JWT a las peticiones.
+ */
+private cargarImagenesDetalle(
+  registro: RegistroPersonalResponse
+): void {
+  this.limpiarUrlsDetalle();
+
+  if (registro.strRutaIne) {
+    this.detalleIneEsPdf.set(
+      registro.strRutaIne.toLowerCase().endsWith('.pdf')
+    );
+
+    this.imageUploadService
+      .getImageBlob(registro.strRutaIne)
+      .subscribe({
+        next: (blob) => {
+          this.detalleIneUrl.set(
+            URL.createObjectURL(blob)
+          );
+        },
+        error: (error) => {
+          console.error('Error cargando INE:', error);
+        }
+      });
+  }
+
+  if (registro.strRutaFotografia) {
+    this.imageUploadService
+      .getImageBlob(registro.strRutaFotografia)
+      .subscribe({
+        next: (blob) => {
+          this.detalleFotoUrl.set(
+            URL.createObjectURL(blob)
+          );
+        },
+        error: (error) => {
+          console.error(
+            'Error cargando fotografía:',
+            error
+          );
+        }
+      });
+  }
+}
+
+/*
+ * Libera las URLs temporales cuando se cierra el detalle.
+ */
+private limpiarUrlsDetalle(): void {
+  const ineUrl = this.detalleIneUrl();
+  const fotoUrl = this.detalleFotoUrl();
+
+  if (ineUrl) {
+    URL.revokeObjectURL(ineUrl);
+  }
+
+  if (fotoUrl) {
+    URL.revokeObjectURL(fotoUrl);
+  }
+
+  this.detalleIneUrl.set(null);
+  this.detalleFotoUrl.set(null);
+  this.detalleIneEsPdf.set(false);
+}
 
   /* Carga el concentrado de registros del usuario autenticado. */
   loadRegistros(): void {

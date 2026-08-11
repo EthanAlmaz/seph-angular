@@ -9,6 +9,8 @@ export interface CreateEmployeeRequest {
   strCurp: string;
   idSexo: number;
   idInstitucion: number;
+  strRutaIne?: string | null;
+  strRutaFotografia?: string | null;
   dateTimeFechaRegistro: string;
   idUsuarioRegistro: string;
   bitActivo: boolean;

@@ -5,7 +5,8 @@ import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../../core/services/auth/authService';
 import { CatalogService } from '../../../core/services/catalogs/catalog.service';
 import { StaffRegistrationService } from '../../../core/services/staff-registration/staff-registration.service';
-
+import { ImageUploadService } from '../../../core/services/images/image-upload.service';
+import { forkJoin, of, switchMap, tap } from 'rxjs';
 import { CreateEmployeeRequest } from '../../../shared/models/staff-registration/requests/createEmployeeRequest';
 import { UpdateDatosAcademicosRequest } from '../../../shared/models/staff-registration/requests/updateDatosAcademicosRequest';
 import { UpdateEmpleadoBasicoRequest } from '../../../shared/models/staff-registration/requests/updateEmpleadoBasicoRequest';
@@ -34,6 +35,7 @@ export class PersonalInformationComponent implements OnInit {
   private staffRegistrationService = inject(StaffRegistrationService);
   private authService = inject(AuthService);
   private catalogService = inject(CatalogService);
+  private imageUploadService = inject(ImageUploadService);
   private cdr = inject(ChangeDetectorRef);
 
   /* La app es zoneless: los valores que se actualizan dentro de
@@ -58,6 +60,17 @@ export class PersonalInformationComponent implements OnInit {
 
   notificationMessage = signal('');
   notificationType = signal<'success' | 'error'>('success');
+  /* Archivos nuevos seleccionados por el usuario. */
+ineFile: File | null = null;
+fotografiaFile: File | null = null;
+
+/* Rutas que ya están guardadas en el backend. */
+rutaIneExistente: string | null = null;
+rutaFotografiaExistente: string | null = null;
+
+/* Vistas previas mostradas en el formulario. */
+inePreviewUrl = signal<string | null>(null);
+fotografiaPreviewUrl = signal<string | null>(null);
 
 employee: CreateEmployeeRequest = {
   strNombre: '',
@@ -66,10 +79,13 @@ employee: CreateEmployeeRequest = {
   strCurp: '',
   idSexo: 0,
   idInstitucion: 0,
+  strRutaIne: null,
+  strRutaFotografia: null,
   dateTimeFechaRegistro: new Date().toISOString(),
   idUsuarioRegistro: '',
   bitActivo: true,
   dateTimeFechaBaja: new Date().toISOString()
+  
 };
 
   /* ¿El empleado tiene perfil académico? */
@@ -153,8 +169,34 @@ employee: CreateEmployeeRequest = {
           this.employee.strApellidoMat = data.strApellidoMat;
           this.employee.strCurp = data.strCurp;
           this.employee.idSexo = data.idSexo;
+          /* Conserva las rutas de las imágenes previamente guardadas. */
+          this.rutaIneExistente = data.strRutaIne;
+          this.rutaFotografiaExistente = data.strRutaFotografia;
 
-          this.tieneSNII = data.strSNII ? 'SI' : 'NO';
+          this.employee.strRutaIne = data.strRutaIne;
+          this.employee.strRutaFotografia = data.strRutaFotografia;
+
+        /* Recupera las imágenes existentes para mostrarlas. */
+        if (data.strRutaIne) {
+          this.loadExistingImagePreview(
+            data.strRutaIne,
+            this.inePreviewUrl
+          );
+        } else {
+          this.inePreviewUrl.set(null);
+        }
+
+        if (data.strRutaFotografia) {
+          this.loadExistingImagePreview(
+            data.strRutaFotografia,
+            this.fotografiaPreviewUrl
+          );
+        } else {
+          this.fotografiaPreviewUrl.set(null);
+        }
+
+        this.tieneSNII = data.strSNII ? 'SI' : 'NO';
+          
           this.snii = data.strSNII ?? '';
 
           this.perfilesAgregados = data.idsPerfilAcademico
@@ -178,6 +220,114 @@ employee: CreateEmployeeRequest = {
         }
       });
   }
+
+  /* Selecciona la imagen del INE y genera su vista previa. */
+onIneSelected(event: Event): void {
+  const input = event.target as HTMLInputElement;
+  const file = input.files?.[0];
+
+  if (!file) {
+    return;
+  }
+
+  if (!this.isValidImage(file)) {
+    input.value = '';
+    return;
+  }
+
+  this.ineFile = file;
+  this.generateImagePreview(file, this.inePreviewUrl);
+}
+
+/* Selecciona la fotografía y genera su vista previa. */
+onFotografiaSelected(event: Event): void {
+  const input = event.target as HTMLInputElement;
+  const file = input.files?.[0];
+
+  if (!file) {
+    return;
+  }
+
+  if (!this.isValidImage(file)) {
+    input.value = '';
+    return;
+  }
+
+  this.fotografiaFile = file;
+  this.generateImagePreview(file, this.fotografiaPreviewUrl);
+}
+
+/* Valida el formato y tamaño de las imágenes seleccionadas. */
+private isValidImage(file: File): boolean {
+  const allowedTypes = [
+    'image/jpeg',
+    'image/png'
+  ];
+
+  if (!allowedTypes.includes(file.type)) {
+    this.showNotification(
+      'La imagen debe tener formato JPG, JPEG o PNG.',
+      'error'
+    );
+
+    return false;
+  }
+
+  const maximumSize = 5 * 1024 * 1024;
+
+  if (file.size > maximumSize) {
+    this.showNotification(
+      'La imagen no debe superar los 5 MB.',
+      'error'
+    );
+
+    return false;
+  }
+
+  return true;
+}
+
+/* Convierte el archivo en una URL temporal para mostrarlo. */
+private generateImagePreview(
+  file: File,
+  previewSignal: ReturnType<typeof signal<string | null>>
+): void {
+  const reader = new FileReader();
+
+  reader.onload = () => {
+    previewSignal.set(reader.result as string);
+  };
+
+  reader.readAsDataURL(file);
+}
+
+/* Recupera una imagen guardada y genera una URL para mostrarla. */
+private loadExistingImagePreview(
+  rutaRelativa: string,
+  previewSignal: ReturnType<typeof signal<string | null>>
+): void {
+  this.imageUploadService
+    .getImageBlob(rutaRelativa)
+    .subscribe({
+      next: (blob) => {
+        const previousUrl = previewSignal();
+
+        if (previousUrl?.startsWith('blob:')) {
+          URL.revokeObjectURL(previousUrl);
+        }
+
+        previewSignal.set(URL.createObjectURL(blob));
+      },
+      error: (error) => {
+        console.error(
+          `No fue posible cargar la imagen: ${rutaRelativa}`,
+          error
+        );
+
+        previewSignal.set(null);
+      }
+    });
+}
 
   /* Agrega el perfil académico seleccionado en el dropdown
   a la lista de perfiles agregados (evita duplicados). */
@@ -231,166 +381,348 @@ employee: CreateEmployeeRequest = {
       this.saveAcademicData(onSuccess, onFinish);
     }
   }
+  
 
   private saveBasicData(
-    onSuccess: (employeeId: number) => void,
-    onFinish?: () => void
-  ): void {
-    if (!this.validateBasicForm()) {
-      onFinish?.();
-      return;
-    }
+  onSuccess: (employeeId: number) => void,
+  onFinish?: () => void
+): void {
+  if (!this.validateBasicForm()) {
+    onFinish?.();
+    return;
+  }
 
-    if (this.employeeIdCreado) {
-      /* Retomando un registro ya existente: el empleado ya fue
-      creado en una sesión anterior, así que se actualiza en
-      lugar de crear uno nuevo. */
-      this.updateExistingBasicData(onFinish);
-      return;
-    }
+  if (this.employeeIdCreado) {
+    /*
+     * Retomando un registro ya existente: el empleado ya fue
+     * creado en una sesión anterior, así que se actualiza en
+     * lugar de crear uno nuevo.
+     */
+    this.updateExistingBasicData(onFinish);
+    return;
+  }
 
-    this.isSaving.set(true);
-    this.notificationMessage.set('');
+  this.isSaving.set(true);
+  this.notificationMessage.set('');
 
-    const finishSaving = (): void => {
-      this.isSaving.set(false);
-      onFinish?.();
-    };
+  const finishSaving = (): void => {
+    this.isSaving.set(false);
+    onFinish?.();
+  };
 
-    const currentUser = this.authService.currentUser();
+  const currentUser = this.authService.currentUser();
 
-    if (!currentUser) {
-      this.showNotification(
-        'No se encontró información del usuario autenticado.',
-        'error'
-      );
+  if (!currentUser) {
+    this.showNotification(
+      'No se encontró información del usuario autenticado.',
+      'error'
+    );
 
-      finishSaving();
-      return;
-    }
+    finishSaving();
+    return;
+  }
 
-    if (!currentUser.idInstitucion) {
-      this.showNotification(
-        'El usuario no tiene una institución asignada.',
-        'error'
-      );
+  if (!currentUser.idInstitucion) {
+    this.showNotification(
+      'El usuario no tiene una institución asignada.',
+      'error'
+    );
 
-      finishSaving();
-      return;
-    }
+    finishSaving();
+    return;
+  }
 
-    this.employee.idInstitucion = currentUser.idInstitucion;
-    this.employee.idUsuarioRegistro = currentUser.id;
-    this.employee.dateTimeFechaRegistro = new Date().toISOString();
+  this.employee.idInstitucion = currentUser.idInstitucion;
+  this.employee.idUsuarioRegistro = currentUser.id;
+  this.employee.dateTimeFechaRegistro = new Date().toISOString();
 
-    this.staffRegistrationService
-      .createEmployee(this.employee)
-      .subscribe({
-        next: (response) => {
-          if (response.statusCode !== 200) {
-            this.showNotification(
-              response.message ??
-                'No fue posible guardar la información personal.',
-              'error'
-            );
+  /*
+   * Si se seleccionó un archivo, se sube al servidor de imágenes.
+   * Si no se seleccionó, se conserva la ruta que ya tenga el modelo.
+   */
+  const ineUpload$ = this.ineFile
+    ? this.imageUploadService.uploadImage('ine', this.ineFile)
+    : of(null);
 
-            finishSaving();
-            return;
-          }
+  const fotografiaUpload$ = this.fotografiaFile
+    ? this.imageUploadService.uploadImage('foto', this.fotografiaFile)
+    : of(null);
 
-          const employeeId =
-            typeof response.data === 'number'
-              ? response.data
-              : response.data?.id;
+  forkJoin({
+    ine: ineUpload$,
+    fotografia: fotografiaUpload$
+  })
+    .pipe(
+      switchMap(({ ine, fotografia }) => {
+        if (ine) {
+          this.employee.strRutaIne = ine.rutaRelativa;
+        }
 
-          if (!employeeId) {
-            this.showNotification(
-              'No se recibió el identificador del empleado.',
-              'error'
-            );
+        if (fotografia) {
+          this.employee.strRutaFotografia =
+            fotografia.rutaRelativa;
+        }
 
-            finishSaving();
-            return;
-          }
-
-          this.employeeIdCreado = employeeId;
-          this.subStep.set('academico');
-
+        return this.staffRegistrationService
+          .createEmployee(this.employee);
+      })
+    )
+    .subscribe({
+      next: (response) => {
+        if (response.statusCode !== 200) {
           this.showNotification(
-            'Información personal guardada. Continúa con el perfil académico.',
-            'success'
-          );
-
-          finishSaving();
-          // No se llama onSuccess aquí: el wizard permanece en este
-          // mismo paso hasta que se guarden también los datos académicos.
-        },
-        error: (error) => {
-          const errorMessage = this.getSaveEmployeeErrorMessage(error);
-
-          this.showNotification(
-            errorMessage,
+            response.message ??
+              'No fue posible guardar la información personal.',
             'error'
           );
 
           finishSaving();
+          return;
         }
-      });
-  }
+
+        const employeeId =
+          typeof response.data === 'number'
+            ? response.data
+            : response.data?.id;
+
+        if (!employeeId) {
+          this.showNotification(
+            'No se recibió el identificador del empleado.',
+            'error'
+          );
+
+          finishSaving();
+          return;
+        }
+
+        this.employeeIdCreado = employeeId;
+
+        /*
+         * Las rutas pasan a considerarse existentes después
+         * de registrar correctamente al empleado.
+         */
+        this.rutaIneExistente =
+          this.employee.strRutaIne ?? null;
+
+        this.rutaFotografiaExistente =
+          this.employee.strRutaFotografia ?? null;
+
+        this.ineFile = null;
+        this.fotografiaFile = null;
+
+        this.subStep.set('academico');
+
+        this.showNotification(
+          'Información personal guardada. Continúa con el perfil académico.',
+          'success'
+        );
+
+        finishSaving();
+
+        /*
+         * No se llama onSuccess aquí: el wizard permanece en este
+         * mismo paso hasta guardar también los datos académicos.
+         */
+      },
+      error: (error) => {
+        console.error(
+          'Error subiendo imágenes o registrando al empleado:',
+          error
+        );
+
+        const errorMessage =
+          this.getSaveEmployeeErrorMessage(error);
+
+        this.showNotification(
+          errorMessage,
+          'error'
+        );
+
+        finishSaving();
+      }
+    });
+}
 
   private updateExistingBasicData(onFinish?: () => void): void {
-    this.isSaving.set(true);
-    this.notificationMessage.set('');
+  this.isSaving.set(true);
+  this.notificationMessage.set('');
 
-    const finishSaving = (): void => {
-      this.isSaving.set(false);
-      onFinish?.();
-    };
+  const finishSaving = (): void => {
+    this.isSaving.set(false);
+    onFinish?.();
+  };
 
-    const request: UpdateEmpleadoBasicoRequest = {
-      strNombre: this.employee.strNombre,
-      strApellidoPat: this.employee.strApellidoPat,
-      strApellidoMat: this.employee.strApellidoMat,
-      strCurp: this.employee.strCurp,
-      idSexo: this.employee.idSexo
-    };
+  let rutaIneNueva: string | null = null;
+  let rutaFotografiaNueva: string | null = null;
 
-    this.staffRegistrationService
-      .updateEmpleadoBasico(this.employeeIdCreado!, request)
-      .subscribe({
-        next: (response) => {
-          if (response.statusCode !== 200) {
-            this.showNotification(
-              response.message ??
-                'No fue posible actualizar la información personal.',
-              'error'
-            );
+  /*
+   * Si se seleccionó una imagen nueva, se sube.
+   * En caso contrario, se conservará la ruta existente.
+   */
+  const ineUpload$ = this.ineFile
+    ? this.imageUploadService
+        .uploadImage('ine', this.ineFile)
+        .pipe(
+          tap((response) => {
+            rutaIneNueva = response.rutaRelativa;
+          })
+        )
+    : of(null);
 
-            finishSaving();
-            return;
-          }
+  const fotografiaUpload$ = this.fotografiaFile
+    ? this.imageUploadService
+        .uploadImage('foto', this.fotografiaFile)
+        .pipe(
+          tap((response) => {
+            rutaFotografiaNueva = response.rutaRelativa;
+          })
+        )
+    : of(null);
 
-          this.subStep.set('academico');
+  forkJoin({
+    ine: ineUpload$,
+    fotografia: fotografiaUpload$
+  })
+    .pipe(
+      switchMap(({ ine, fotografia }) => {
+        const request: UpdateEmpleadoBasicoRequest = {
+          strNombre: this.employee.strNombre,
+          strApellidoPat: this.employee.strApellidoPat,
+          strApellidoMat: this.employee.strApellidoMat,
+          strCurp: this.employee.strCurp,
+          idSexo: this.employee.idSexo,
 
-          this.showNotification(
-            'Información personal actualizada. Continúa con el perfil académico.',
-            'success'
+          /*
+           * Si existe una imagen nueva usa su ruta.
+           * De lo contrario, conserva la ruta anterior.
+           */
+          strRutaIne:
+            ine?.rutaRelativa ??
+            this.rutaIneExistente,
+
+          strRutaFotografia:
+            fotografia?.rutaRelativa ??
+            this.rutaFotografiaExistente
+        };
+
+        return this.staffRegistrationService
+          .updateEmpleadoBasico(
+            this.employeeIdCreado!,
+            request
           );
+      })
+    )
+    .subscribe({
+      next: (response) => {
+        if (response.statusCode !== 200) {
+          /*
+           * La actualización no fue aceptada. Se eliminan las
+           * imágenes nuevas para no dejar archivos huérfanos.
+           */
+          this.deleteImageSilently(rutaIneNueva);
+          this.deleteImageSilently(rutaFotografiaNueva);
 
-          finishSaving();
-          // No se llama onSuccess aquí: el wizard permanece en este
-          // mismo paso hasta que se guarden también los datos académicos.
-        },
-        error: () => {
           this.showNotification(
-            'No fue posible actualizar la información personal.',
+            response.message ??
+              'No fue posible actualizar la información personal.',
             'error'
           );
 
           finishSaving();
+          return;
         }
-      });
+
+        /*
+         * La actualización terminó correctamente. Ahora es seguro
+         * eliminar las imágenes anteriores que fueron reemplazadas.
+         */
+        if (
+          rutaIneNueva &&
+          this.rutaIneExistente &&
+          rutaIneNueva !== this.rutaIneExistente
+        ) {
+          this.deleteImageSilently(
+            this.rutaIneExistente
+          );
+        }
+
+        if (
+          rutaFotografiaNueva &&
+          this.rutaFotografiaExistente &&
+          rutaFotografiaNueva !== this.rutaFotografiaExistente
+        ) {
+          this.deleteImageSilently(
+            this.rutaFotografiaExistente
+          );
+        }
+
+        if (rutaIneNueva) {
+          this.rutaIneExistente = rutaIneNueva;
+          this.employee.strRutaIne = rutaIneNueva;
+        }
+
+        if (rutaFotografiaNueva) {
+          this.rutaFotografiaExistente =
+            rutaFotografiaNueva;
+
+          this.employee.strRutaFotografia =
+            rutaFotografiaNueva;
+        }
+
+        this.ineFile = null;
+        this.fotografiaFile = null;
+
+        this.subStep.set('academico');
+
+        this.showNotification(
+          'Información personal actualizada. Continúa con el perfil académico.',
+          'success'
+        );
+
+        finishSaving();
+      },
+      error: (error) => {
+        /*
+         * Si falló una carga o la actualización del empleado,
+         * se eliminan las imágenes nuevas que alcanzaron a subirse.
+         */
+        this.deleteImageSilently(rutaIneNueva);
+        this.deleteImageSilently(rutaFotografiaNueva);
+
+        console.error(
+          'Error actualizando la información personal:',
+          error
+        );
+
+        this.showNotification(
+          'No fue posible actualizar la información personal.',
+          'error'
+        );
+
+        finishSaving();
+      }
+    });
+}
+
+/* Elimina una imagen sin interrumpir el flujo principal. */
+private deleteImageSilently(
+  rutaRelativa: string | null
+): void {
+  if (!rutaRelativa) {
+    return;
   }
+
+  this.imageUploadService
+    .deleteImage(rutaRelativa)
+    .subscribe({
+      error: (error) => {
+        console.error(
+          `No fue posible eliminar la imagen: ${rutaRelativa}`,
+          error
+        );
+      }
+    });
+}
 
   private saveAcademicData(
     onSuccess: (employeeId: number) => void,
